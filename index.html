@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>آزمون سنجش شناختی، تحلیلی و فکری</title>
+<title>پرسشنامه</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -101,8 +101,8 @@
   <main>
     <div class="top">
       <div class="eyebrow">Cognitive & Analytical Assessment — Final</div>
-      <h1>آزمون سنجش شناختی، تحلیلی و فکری</h1>
-      <p class="lead">۲۸ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد هوش.</p>
+      <h1>پرسشنامه آزمایشی</h1>
+      <p class="lead">۲۸ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
       <div class="instructions">
         این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار، قضاوت در بحران و بازبینی باورها را می‌سنجد.
         <ul>
@@ -122,7 +122,7 @@
         </div>
       </div>
       <div class="field">
-        <label>ایمیل یا آیدی تلگرام (اختیاری، برای پیگیری)</label>
+        <label>راه ارتباطی (اختیاری)</label>
         <input type="text" id="pContact">
       </div>
     </div>
@@ -174,14 +174,14 @@ function geminiConfigured(){
 /* ========================================================================= */
 
 const SECTIONS = [
-  {code:"A", title:"استدلال سیستمی و علّی", weight:"۱۵٪", desc:"تفکیک علت از هم‌زمانی، رفتار غیرخطی، مسیرهای اجرای متفاوت."},
-  {code:"B", title:"شواهد، احتمال و طراحی آزمایش", weight:"۱۵٪", desc:"همبستگی در برابر علیت، احتمال اولیه، واکنش به نتیجهٔ ناسازگار."},
-  {code:"C", title:"الگو، مدل‌سازی و پیش‌بینی", weight:"۱۰٪", desc:"استنتاج از دنباله، برخورد با دادهٔ ناهمخوان، سادگی مدل."},
-  {code:"D", title:"یادگیری و انتقال ساختار — سیستم ناشناخته", weight:"۲۵٪ · مهم‌ترین بخش", desc:"کشف قانون یک سیستم از روی نمونه و انتقال آن به دامنه‌ای جدید."},
-  {code:"E", title:"قضاوت در بحران و همکاری فکری", weight:"۱۵٪", desc:"اعلام خطای بنیادی، تقسیم اعتبار، مواجهه با نظر متخصص مخالف."},
-  {code:"F", title:"تواضع فکری و بازبینی باور", weight:"۱۰٪", desc:"تغییر واقعی یک باور، توقف در یک مسیر یادگیری، پذیرش عدم‌قطعیت."},
-  {code:"G", title:"کالیبراسیون معرفتی و ارزیابی شواهد", weight:"۱۰٪", desc:"وزن‌دهی به شواهد متناقض، نتیجه‌گیری از روابط ناقص."},
-  {code:"H", title:"پاسخ‌های باز نهایی", weight:"بررسی انسانی", desc:"دو سؤال برای بررسی عمیق‌تر، پس از غربال اولیه."},
+  {code:"A", title:"استدلال سیستمی و علّی", weight:"۱۵٪", desc:""},
+  {code:"B", title:"شواهد، احتمال و طراحی آزمایش", weight:"۱۵٪", desc:""},
+  {code:"C", title:"الگو، مدل‌سازی و پیش‌بینی", weight:"۱۰٪", desc:""},
+  {code:"D", title:"یادگیری و انتقال ساختار - سیستم ناشناخته", weight:"۲۵٪ · مهم‌ترین بخش", desc:""},
+  {code:"E", title:"قضاوت در بحران و همکاری فکری", weight:"۱۵٪", desc:""},
+  {code:"F", title:"تواضع فکری و بازبینی باور", weight:"۱۰٪", desc:""},
+  {code:"G", title:"کالیبراسیون معرفتی و ارزیابی شواهد", weight:"۱۰٪", desc:""},
+  {code:"H", title:"پاسخ‌های باز نهایی", weight:"بررسی انسانی", desc:""},
 ];
 
 // type: mcq | open | number | number2 | info
