@@ -239,7 +239,7 @@ const ITEMS = [
 ];
 
 // -------------------------------------------------------------------------
-// رندر
+// Render
 // -------------------------------------------------------------------------
 const formRoot = document.getElementById("formRoot");
 const railList = document.getElementById("railList");
@@ -342,7 +342,7 @@ SECTIONS.forEach(sec=>{
 });
 
 // -------------------------------------------------------------------------
-// رویدادها
+// Events
 // -------------------------------------------------------------------------
 function wordLimitOf(id){
   for(const it of ITEMS){
@@ -408,7 +408,7 @@ const observer = new IntersectionObserver((entries)=>{
 document.querySelectorAll("section.block").forEach(s=>observer.observe(s));
 
 // -------------------------------------------------------------------------
-// فهرست فیلدهای الزامی
+// Required Field List
 // -------------------------------------------------------------------------
 function requiredIds(){
   const ids = [];
@@ -430,7 +430,7 @@ function updateProgress(){
 updateProgress();
 
 // -------------------------------------------------------------------------
-// آیتم‌های باز (بدون پاسخ ثابت) — برای Gemini و تلگرام
+// Open Questions
 // -------------------------------------------------------------------------
 function collectOpenQA(){
   const list = [];
@@ -449,7 +449,7 @@ function collectOpenQA(){
 }
 
 // -------------------------------------------------------------------------
-// امتیازدهی عینی + heuristic
+// Scoring + heuristic
 // -------------------------------------------------------------------------
 const GRADING_KEY = `کلید تفسیر آزمون شناختی (خلاصه):
 محورها و وزن: Systems Reasoning ۱۵٪، Causal Reasoning ۱۵٪، Evidence Evaluation ۱۵٪، Pattern/Modeling ۱۰٪، Learning & Transfer ۲۵٪ (مهم‌ترین)، Crisis Judgment & Collaboration ۱۰٪، Intellectual Humility ۵٪، Epistemic Calibration ۵٪.
@@ -593,7 +593,7 @@ function buildReport(name, age, contact, geminiResult){
 }
 
 // -------------------------------------------------------------------------
-// ارسال به تلگرام
+// Send to Bot
 // -------------------------------------------------------------------------
 async function sendToTelegram(report){
   const base = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}`;
@@ -614,12 +614,12 @@ async function sendToTelegram(report){
   fd.append("document", blob, `exam-${report.name.replace(/\s+/g,"_")}-${Date.now()}.txt`);
   const res = await fetch(`${base}/sendDocument`, {method:"POST", body: fd});
   const json = await res.json();
-  if(!json.ok) throw new Error(json.description || "خطای نامشخص تلگرام");
+  if(!json.ok) throw new Error(json.description || "tmeerr");
   return true;
 }
 
 // -------------------------------------------------------------------------
-// ثبت نهایی
+// Save
 // -------------------------------------------------------------------------
 document.getElementById("submitBtn").addEventListener("click", async ()=>{
   const name = document.getElementById("pName").value.trim();
@@ -649,24 +649,24 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
   let geminiResult = null;
   if(geminiConfigured()){
     statusBox.className = "status info";
-    statusBox.textContent = "در حال دریافت تفسیر از Gemini...";
+    statusBox.textContent = "gmnai...";
     geminiResult = await getGeminiInterpretation(collectOpenQA());
   }
 
   const report = buildReport(name, age, contact, geminiResult);
 
   if(telegramConfigured()){
-    statusBox.textContent = "در حال ارسال به تلگرام...";
+    statusBox.textContent = "sndttme...";
     try{
       await sendToTelegram(report);
-      statusBox.textContent = "✓ با موفقیت به تلگرام ارسال شد.";
+      statusBox.textContent = "sndttme: 200";
       statusBox.className = "status ok";
     }catch(err){
-      statusBox.textContent = "ارسال به تلگرام ناموفق بود: " + err.message;
+      statusBox.textContent = "tmeerr: " + err.message;
       statusBox.className = "status err";
     }
   } else {
-    statusBox.textContent = "کلید تلگرام تنظیم نشده — نتیجه فقط همین‌جا به شما نمایش داده می‌شود و به‌جایی ارسال نشد.";
+    statusBox.textContent = "کلید تنظیم نشده — نتیجه به شما نمایش داده می‌شود.";
     statusBox.className = "status info";
   }
 
