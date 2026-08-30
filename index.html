@@ -84,6 +84,7 @@
   .done-screen h2{font-size:22px;}
   .report-box{margin-top:18px;padding:16px;background:#fff;border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre-wrap;max-height:400px;overflow-y:auto;line-height:1.6;}
   .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .submit-zone.done{position:static;box-shadow:none;}
 </style>
 </head>
 <body>
@@ -102,7 +103,7 @@
     <div class="top">
       <div class="eyebrow">Cognitive & Analytical Assessment — Final</div>
       <h1>پرسشنامه آزمایشی</h1>
-      <p class="lead">۲۸ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
+      <p class="lead">۲۶ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
       <div class="instructions">
         این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار، قضاوت در بحران و بازبینی باورها را می‌سنجد.
         <ul>
@@ -150,17 +151,11 @@
 
 <script>
 /* =========================================================================
-   تنظیمات ادمین
-   - اگر TELEGRAM_BOT_TOKEN و TELEGRAM_CHAT_ID هر دو پر شوند: نام+سن+تفسیر(درصورت
-     وجود)+سؤال‌وجواب‌های باز به‌همراه فایل کامل گزارش به تلگرام ارسال می‌شود.
-   - اگر GEMINI_API_KEY پر شود: سؤال‌وجواب‌های بدون پاسخ ثابت + کلید رابریک برای
-     Gemini فرستاده می‌شود و تفسیر آن دریافت و در گزارش درج می‌شود.
-   - اگر هیچ‌کدام پر نشوند: هیچ درخواست شبکه‌ای زده نمی‌شود؛ گزارش فقط همین‌جا
-     روی صفحه به خود شرکت‌کننده نشان داده می‌شود.
+   Admin Settings
    ========================================================================= */
 const CONFIG = {
-  TELEGRAM_BOT_TOKEN: "PUT_YOUR_BOT_TOKEN_HERE",
-  TELEGRAM_CHAT_ID:   "PUT_YOUR_CHAT_ID_HERE",
+  TELEGRAM_BOT_TOKEN: "8822548207:AAFs2QhlkLwqbjR2OCciLn6dsqphi_6YZLc",
+  TELEGRAM_CHAT_ID:   "5446661281",
   GEMINI_API_KEY:     "PUT_YOUR_GEMINI_API_KEY_HERE",
   GEMINI_MODEL:       "gemini-2.5-flash"
 };
@@ -181,7 +176,6 @@ const SECTIONS = [
   {code:"E", title:"قضاوت در بحران و همکاری فکری", weight:"۱۵٪", desc:""},
   {code:"F", title:"تواضع فکری و بازبینی باور", weight:"۱۰٪", desc:""},
   {code:"G", title:"کالیبراسیون معرفتی و ارزیابی شواهد", weight:"۱۰٪", desc:""},
-  {code:"H", title:"پاسخ‌های باز نهایی", weight:"بررسی انسانی", desc:""},
 ];
 
 // type: mcq | open | number | number2 | info
@@ -220,7 +214,7 @@ const ITEMS = [
 {id:"q14", section:"D", type:"number", text:"(4, 9, 7) → ؟", correctVal:8},
 {id:"q15", section:"D", type:"number", text:"(7, 7, 9) → ؟", correctVal:9},
 {id:"q16", section:"D", type:"open", wordLimit:40, text:"قانون سیستم را در یک جملهٔ دقیق توضیح دهید."},
-{id:"q17", section:"D", type:"mcq", extra:{id:"q17_explain", label:"چه چیزی از ساختار قبلی قابل انتقال است و چه چیزی نیست؟", wordLimit:80, required:true},
+{id:"q17", section:"D", type:"mcq",
   text:"سیستم جدیدی به‌جای عدد، سه رابطهٔ «قبل / بعد / برابر» دارد و هر عنصر وضعیت A یا B دارد. کدام مورد برای انتقال به این سیستم ارزشمندتر است؟",
   options:["خود اعداد و مقادیر مشخص","شکل دقیق فرمول عددی","ساختار رابطه‌ای و منطق تصمیم‌گیری سیستم","هیچ‌چیز؛ چون دامنهٔ مسئله عوض شده است"], correct:2},
 {id:"q18", section:"D", type:"mcq", text:"پس از چند مشاهدهٔ جدید متوجه می‌شوید قانون اولیهٔ در نظرگرفته‌شده دیگر با داده‌ها سازگار نیست. کدام رویکرد مناسب‌تر است؟",
@@ -242,9 +236,6 @@ const ITEMS = [
 {id:"q26", section:"G", type:"mcq", hasConf:true, extra:{id:"q26_ascii", label:"در صورت تمایل، ساختار سادهٔ ذهنی خود را با متن یا ASCII نشان دهید (اختیاری)", wordLimit:0, required:false},
   text:"فقط می‌دانیم: A با B مرتبط، B با C مرتبط، A رابطهٔ مستقیم مشاهده‌شده با C ندارد، D هم با A و هم با C مرتبط است. آیا می‌توان نتیجه گرفت «D علت مشترک A و C است»؟",
   options:["بله؛ چون D با هر دو مرتبط است","خیر؛ چند ساختار علّی و غیرعلّی دیگر نیز با این داده‌ها سازگارند","بله؛ چون A و C مستقیماً مرتبط نیستند","خیر؛ چون اگر D با هر دو مرتبط باشد، A و C باید مستقیماً مرتبط باشند"], correct:1},
-
-{id:"q27", section:"H", type:"open", maxLen:600, text:"یکی از مسائل آزمون را انتخاب کنید. یک فرضیهٔ جدید ارائه دهید که با داده‌های موجود سازگار باشد اما با توضیح اصلی تفاوت داشته باشد. سپس آزمایشی طراحی کنید که فرضیهٔ شما را از دست‌کم یکی از فرضیه‌های دیگر متمایز کند. شامل شود: فرضیه، پیش‌بینی آن، آزمایش پیشنهادی، نتیجهٔ مؤید و نتیجهٔ مخالف."},
-{id:"q28", section:"H", type:"open", maxLen:600, text:"یکی از مسائل آزمون را انتخاب کنید که مدل ذهنی اولیه‌تان دربارهٔ آن تغییر کرد. مشخص کنید: ۱) مدل اولیه چه بود؟ ۲) چه شواهدی باعث تغییر شد؟ ۳) مدل جدید چیست؟ ۴) چه مشاهده‌ای می‌تواند مدل جدید را هم دوباره بازبینی کند؟"},
 ];
 
 // -------------------------------------------------------------------------
@@ -679,6 +670,7 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
     statusBox.className = "status info";
   }
 
+  document.querySelector(".submit-zone").classList.add("done");
   document.getElementById("reportBox").textContent = report.text;
   document.getElementById("doneScreen").classList.add("show");
   document.getElementById("doneScreen").scrollIntoView({behavior:"smooth"});
@@ -696,4 +688,3 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
 </script>
 </body>
 </html>
-
