@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آزمون سنجش شناختی و تحلیلی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ECE7DA;
+    --paper-2:#E2DCCB;
+    --ink:#1E211C;
+    --ink-soft:#54544C;
+    --line:#CFC6AE;
+    --accent:#A63B2C;
+    --accent-soft:#A63B2C22;
+    --ok:#3D6B4C;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Vazirmatn',Tahoma,sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---- layout ---- */
+  .shell{
+    display:grid;
+    grid-template-columns:220px minmax(0,760px);
+    justify-content:center;
+    gap:48px;
+    max-width:1080px;
+    margin:0 auto;
+    padding:40px 24px 120px;
+  }
+  @media (max-width:880px){
+    .shell{grid-template-columns:1fr; padding:24px 16px 100px;}
+    .rail{display:none;}
+  }
+
+  /* ---- side rail ---- */
+  .rail{position:sticky; top:40px; align-self:start; height:fit-content;}
+  .rail-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+    text-transform:uppercase;
+  }
+  .rail-item{
+    display:flex; align-items:baseline; gap:10px;
+    padding:6px 0;
+    font-size:13px;
+    color:var(--ink-soft);
+    border-right:2px solid transparent;
+    padding-right:12px;
+    margin-right:-12px;
+    cursor:pointer;
+    transition:color .2s, border-color .2s;
+  }
+  .rail-item .code{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft);}
+  .rail-item.active{color:var(--ink); border-color:var(--accent); font-weight:600;}
+  .rail-item.active .code{color:var(--accent);}
+  .rail-progress{
+    margin-top:20px; padding-top:16px; border-top:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft);
+  }
+  .rail-bar{height:3px; background:var(--line); margin-top:8px; position:relative; overflow:hidden;}
+  .rail-bar-fill{height:100%; background:var(--accent); width:0%; transition:width .3s;}
+
+  /* ---- header ---- */
+  .top{padding-top:8px; margin-bottom:56px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+  h1{font-size:30px; font-weight:900; margin:10px 0 16px; letter-spacing:-.01em;}
+  .lead{color:var(--ink-soft); font-size:15px; max-width:60ch;}
+  .instructions{
+    margin-top:24px; padding:18px 20px; background:var(--paper-2);
+    border-right:3px solid var(--accent); font-size:14px; color:var(--ink-soft);
+  }
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:6px;}
+  .field input[type=text], .field input[type=email]{
+    width:100%; padding:10px 12px; border:1px solid var(--line); background:#fff;
+    font-family:'Vazirmatn',sans-serif; font-size:14px; border-radius:var(--radius);
+  }
+
+  /* ---- sections ---- */
+  section.block{margin-bottom:64px; scroll-margin-top:40px;}
+  .block-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+  .block-code{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); font-weight:600;}
+  .block-title{font-size:19px; font-weight:700;}
+  .block-weight{margin-right:auto; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft);}
+  .block-desc{font-size:13.5px; color:var(--ink-soft); margin-bottom:28px;}
+
+  .q{margin-bottom:36px; padding-bottom:32px; border-bottom:1px solid var(--line);}
+  .q:last-child{border-bottom:none;}
+  .q-num{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:8px;}
+  .q-text{font-size:15.5px; margin-bottom:14px; white-space:pre-line;}
+  .q-text code{
+    font-family:'JetBrains Mono',monospace; background:var(--paper-2); padding:1px 6px;
+    border-radius:2px; font-size:.92em;
+  }
+  .data-block{
+    font-family:'JetBrains Mono',monospace; font-size:13.5px; background:var(--paper-2);
+    padding:14px 16px; margin:10px 0 16px; white-space:pre; overflow-x:auto; border-radius:2px;
+  }
+
+  .options{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+    border:1px solid var(--line); background:#fff; cursor:pointer; font-size:14px;
+    border-radius:var(--radius); transition:border-color .15s, background .15s;
+  }
+  .opt:hover{border-color:var(--ink-soft);}
+  .opt.checked{border-color:var(--accent); background:var(--accent-soft);}
+  .opt input{margin-top:3px;}
+
+  textarea, input[type=number]{
+    width:100%; padding:12px 14px; border:1px solid var(--line); background:#fff;
+    font-family:'Vazirmatn',sans-serif; font-size:14.5px; border-radius:var(--radius); resize:vertical;
+  }
+  textarea{min-height:90px; line-height:1.7;}
+  input[type=number]{width:140px; font-family:'JetBrains Mono',monospace;}
+  .charcount{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft); margin-top:4px; text-align:left;}
+
+  .conf-row{display:flex; align-items:center; gap:10px; margin-top:10px;}
+  .conf-row label{font-size:13px; color:var(--ink-soft);}
+  select{padding:8px 10px; border:1px solid var(--line); background:#fff; font-family:'JetBrains Mono',monospace; font-size:13px; border-radius:2px;}
+
+  /* ---- submit area ---- */
+  .submit-zone{
+    margin-top:40px; padding:28px; background:var(--paper-2); border-radius:2px;
+    position:sticky; bottom:20px; box-shadow:0 4px 24px rgba(0,0,0,.08);
+  }
+  .submit-zone h3{margin:0 0 8px; font-size:16px;}
+  .submit-zone p{margin:0 0 18px; font-size:13px; color:var(--ink-soft);}
+  .btn{
+    appearance:none; border:none; padding:13px 26px; font-family:'Vazirmatn',sans-serif;
+    font-size:14.5px; font-weight:600; cursor:pointer; border-radius:2px; transition:opacity .15s, transform .1s;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--ink); color:var(--paper);}
+  .btn-primary:disabled{opacity:.5; cursor:not-allowed;}
+  .btn-ghost{background:transparent; border:1px solid var(--ink-soft); color:var(--ink);}
+  .status{margin-top:14px; font-size:13px; font-family:'JetBrains Mono',monospace;}
+  .status.ok{color:var(--ok);}
+  .status.err{color:var(--accent);}
+  .missing-list{margin-top:12px; font-size:12.5px; color:var(--accent);}
+
+  .done-screen{display:none;}
+  .done-screen.show{display:block;}
+  .done-screen h2{font-size:22px;}
+  .report-box{
+    margin-top:18px; padding:16px; background:#fff; border:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace; font-size:12px; white-space:pre-wrap;
+    max-height:340px; overflow-y:auto; line-height:1.6;
+  }
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="rail" id="rail">
+    <div class="rail-title">بخش‌ها</div>
+    <div id="railList"></div>
+    <div class="rail-progress">
+      پاسخ داده‌شده: <span id="progressCount">0</span> / <span id="progressTotal">0</span>
+      <div class="rail-bar"><div class="rail-bar-fill" id="progressFill"></div></div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="top">
+      <div class="eyebrow">Cognitive & Analytical Assessment</div>
+      <h1>آزمون سنجش شناختی و تحلیلی</h1>
+      <p class="lead">این آزمون ۳۴ سؤال دارد و حدود ۴۵ تا ۵۵ دقیقه زمان می‌برد. پاسخ‌ها به‌صورت خودکار برای بررسی ارسال می‌شوند.</p>
+      <div class="instructions">
+        هیچ پاسخ مطلقاً درست یا غلطی وجود ندارد. سیستم امتیازدهی روی «نحوهٔ استدلال» شما تمرکز دارد. در سؤال‌هایی که سطح اطمینان خواسته شده، صادقانه پاسخ دهید. پاسخ‌های باز را دقیق و مصداقی بنویسید؛ کلی‌گویی و اصطلاحات سنگین بدون محتوا در ارزیابی به ضرر شماست. می‌توانید هر زمان صفحه را ترک کنید و ادامه دهید — اطلاعات تا لحظهٔ ارسال، فقط روی همین صفحه و در مرورگر شما نگه‌داری می‌شود.
+      </div>
+      <div class="field" style="margin-top:24px;">
+        <label>نام و نام‌خانوادگی *</label>
+        <input type="text" id="pName" required>
+      </div>
+      <div class="field">
+        <label>ایمیل یا آیدی تلگرام (برای پیگیری) *</label>
+        <input type="text" id="pContact" required>
+      </div>
+    </div>
+
+    <div id="formRoot"></div>
+
+    <div class="submit-zone">
+      <h3>ارسال پاسخ‌ها</h3>
+      <p>پیش از ارسال، همهٔ سؤالات الزامی باید پاسخ داده شده باشند.</p>
+      <button class="btn btn-primary" id="submitBtn">ثبت و ارسال پاسخ‌ها</button>
+      <div class="status" id="statusMsg"></div>
+      <div class="missing-list" id="missingList"></div>
+    </div>
+
+    <div class="done-screen" id="doneScreen">
+      <h2>سپاسگزاریم — آزمون ثبت شد</h2>
+      <p class="lead">پاسخ‌های شما در ادامه قابل مشاهده است. اگر ارسال خودکار با مشکل مواجه شد، از دکمه‌های پشتیبان استفاده کنید.</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="mailBtn">ارسال با ایمیل</button>
+        <button class="btn btn-ghost" id="downloadBtn">دانلود متن پاسخ‌ها</button>
+      </div>
+      <div class="report-box" id="reportBox"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* =========================================================================
+   تنظیمات ادمین — این دو مقدار را قبل از انتشار پر کنید
+   ========================================================================= */
+const CONFIG = {
+  TELEGRAM_BOT_TOKEN: "PUT_YOUR_BOT_TOKEN_HERE",   // از @BotFather بگیرید
+  TELEGRAM_CHAT_ID:   "PUT_YOUR_CHAT_ID_HERE",     // آیدی عددی چت خودتان
+  ADMIN_EMAIL:        "admin@example.com"           // برای دکمهٔ پشتیبان ایمیل
+};
+/* ========================================================================= */
+
+// -------------------------------------------------------------------------
+// تعریف سؤالات
+// -------------------------------------------------------------------------
+const SECTIONS = [
+  {code:"A", title:"استدلال سیستمی و علّی", weight:"۱۵٪", desc:"تشخیص روابط علّی، تفکیک مشاهده از تفسیر."},
+  {code:"B", title:"شواهد، احتمال و طراحی آزمایش", weight:"۱۵٪", desc:"correlation ≠ causation، Bayesian reasoning، طراحی آزمایش."},
+  {code:"C", title:"الگو، مدل‌سازی و پیش‌بینی", weight:"۱۰٪", desc:"تشخیص الگو، پارسیمونی، جلوگیری از overfitting ذهنی."},
+  {code:"D", title:"یادگیری و انتقال ساختار — سیستم K", weight:"۲۵٪ · مهم‌ترین بخش", desc:"کشف قاعدهٔ یک سیستم ناشناخته صرفاً از روی مثال و پیش‌بینی موارد جدید."},
+  {code:"E", title:"قضاوت در بحران و همکاری فکری", weight:"۱۵٪", desc:"مدیریت ایگو، پذیرش خطا، برخورد با اختلاف‌نظر."},
+  {code:"F", title:"تواضع فکری و بازبینی باور", weight:"۱۰٪", desc:"مثال‌های مصداقی از تغییر یک باور یا توقف یک مسیر یادگیری."},
+  {code:"G", title:"کالیبراسیون معرفتی", weight:"۱۰٪", desc:"تشخیص underdetermination، هم‌خوانی اطمینان با دقت واقعی."},
+  {code:"H", title:"پاسخ‌های باز نهایی", weight:"بررسی انسانی", desc:"دو سؤال باز که فقط برای عبورکنندگان از مرحلهٔ اول بررسی می‌شود."},
+];
+
+// هر آیتم: {id, section, type: mcq|open|number|conf, text, data(اختیاری بلوک کد), options(برای mcq), correct(اندیس آپشن درست، برای امتیازدهی خودکار), correctVal(برای number), maxLen}
+const ITEMS = [
+{id:"q1", section:"A", type:"open", text:"یک برنامهٔ ناشناخته را اجرا می‌کنید: اجرای عادی → مکث ۲ ثانیه‌ای → اتصال شبکه → ادامه. وقتی اینترنت کاملاً قطع است، مکث همچنان اتفاق می‌افتد.\nکدام فرضیه دربارهٔ علت مکث تضعیف می‌شود و کدام تقویت؟ اگر فقط یک آزمایش دیگر مجاز باشید (بدون دیدن سورس‌کد)، چه متغیری را تغییر می‌دهید؟"},
+{id:"q2", section:"A", type:"open", text:"سیستمی با ورودی X همیشه خروجی ۱۰۰ می‌دهد. با تغییر ۰.۰۰۰۱ در ورودی، خروجی به ۱۰۰٬۰۰۰ می‌رسد.\nسه توضیح تحلیلی متفاوت بنویسید (از خطای سیستمی تا ماهیت خودِ سیستم). کدام محتمل‌تر است و چرا؟"},
+{id:"q3", section:"A", type:"mcq", text:"مشاهدات یک سیستم: X↑ → Y↑، اما گاهی X زیاد می‌شود و Y ثابت می‌ماند؛ گاهی برعکس؛ و با تغییر Z، رابطهٔ X و Y هم تغییر می‌کند. کدام مدل را انتخاب می‌کنید؟",
+  options:["X علت Y است با کمی نویز","X و Y احتمالاً تحت تأثیر Z هستند و رابطهٔ ظاهری گمراه‌کننده است","سیستم پیچیده‌تر از آن است که بشود مدل ساخت","چون X و Y با هم افزایش یافته‌اند، رابطهٔ مستقیم دارند"], correct:1, hasConf:true},
+{id:"q4", section:"A", type:"open", text:"شش اجرای یک برنامه ثبت شده: سه بار مسیر A→B→C→D→Output۱۷، دو بار مسیر A→B→X→Y→D→Output۱۷، یک بار دوباره مسیر اول.\nکدام مدل با داده سازگارتر و فشرده‌تر است؟"},
+
+{id:"q5", section:"B", type:"open", text:"جدول یک شرکت نشان می‌دهد هرچه تعداد جلسات ماهانه بیشتر، تعداد باگ‌ها هم بیشتر شده. مدیر نتیجه می‌گیرد «جلسات باعث باگ می‌شوند».\nحداقل دو توضیح جایگزین برای این همبستگی بنویسید."},
+{id:"q6", section:"B", type:"open", text:"برای بررسی رابطهٔ واقعی جلسات و باگ‌ها فقط اجازهٔ اندازه‌گیری یک متغیر دیگر را دارید. کدام را انتخاب می‌کنید و چرا؟ (تعداد توسعه‌دهندگان / پیچیدگی پروژه / ساعت شروع جلسات / چیز دیگر)"},
+{id:"q7", section:"B", type:"mcq", text:"یک آزمایش پزشکی نرخ مشخصی مثبت کاذب دارد. فردی از جمعیتی با احتمال اولیهٔ بسیار پایین بیماری، نتیجهٔ مثبت می‌گیرد. کدام گزاره صحیح‌تر است؟",
+  options:["مثبت‌شدن تقریباً ثابت می‌کند فرد بیمار است","احتمال اولیه دیگر اهمیتی ندارد","احتمال اولیه باید در تفسیر نتیجه لحاظ شود","مثبت‌شدن، تمام اطلاعات قبلی را بی‌اهمیت می‌کند"], correct:2},
+{id:"q8", section:"B", type:"mcq", text:"آزمایشی برخلاف پیش‌بینی شما نتیجه می‌دهد. واکنش علمی‌تر کدام است؟",
+  options:["نتیجه را نادیده می‌گیرم، احتمالاً اجرا مشکل داشته","فرضیه را موقتاً زیر سؤال می‌برم و هم طراحی آزمایش هم پیش‌فرض‌ها را بررسی می‌کنم","آزمایش را تکرار می‌کنم تا نتیجهٔ مورد انتظار ظاهر شود","چون نتیجه ناسازگار است، نظریه قطعاً غلط است"], correct:1},
+
+{id:"q9", section:"C", type:"open", text:"دنبالهٔ X: ۲، ۴، ۸، ۱۶، ۳۲ / دنبالهٔ Y: ۲، ۳، ۵، ۹، ۱۷ — در زمان ۶ چه مقادیری پیش‌بینی می‌کنید؟ چه نوع اطلاعاتی (نسبت، اختلاف، روند کلی...) بیشترین نقش را در پیش‌بینی‌تان داشت؟"},
+{id:"q10", section:"C", type:"mcq", text:"خروجی‌های یک سیستم: ۱۰، ۲۰، ۴۰، ۸۰، ۸۱، ۱۶۰، ۳۲۰. واکنش مناسب‌تر به عدد ناهمخوان ۸۱ کدام است؟",
+  options:["چون ناسازگار است، کل مدل را کنار می‌گذارم","احتمال یک رخداد خاص یا خطای اندازه‌گیری را بررسی می‌کنم، بدون رها کردن مدل","حتماً قانون سیستم تغییر کرده","عدد را حذف می‌کنم و نادیده می‌گیرم"], correct:1},
+{id:"q11", section:"C", type:"open", text:"دو مدل با تمام داده‌های فعلی سازگارند: مدلی ساده با ۲ پارامتر، و مدلی پیچیده با ۲۷ پارامتر. کدام را ترجیح می‌دهید و در چه شرایطی ترجیحتان عوض می‌شود؟"},
+
+{id:"qD_data", section:"D", type:"info", data:
+"(2, 5, 4) → 5      (2, 5, 5) → 3\n(5, 2, 4) → 6      (5, 2, 5) → 4\n(3, 3, 4) → 4      (3, 3, 5) → 5",
+  text:"سیستمی جدید معرفی می‌شود؛ دانش قبلی لازم نیست. قانون سیستم را از روی این نمونه‌ها کشف کنید، سپس در سؤالات بعدی پیش‌بینی کنید:"},
+{id:"q12", section:"D", type:"number", text:"(4, 9, 6) → ؟", correctVal:5},
+{id:"q13", section:"D", type:"number", text:"(9, 4, 6) → ؟", correctVal:6},
+{id:"q14", section:"D", type:"number", text:"(4, 9, 7) → ؟", correctVal:3},
+{id:"q15", section:"D", type:"number", text:"(6, 6, 8) → ؟", correctVal:8},
+{id:"q16", section:"D", type:"open", text:"توصیف قانون سیستم را در یک جمله بنویسید."},
+{id:"q17", section:"D", type:"open", text:"فرض کنید سیستم جدیدی می‌بینید که با عدد کار نمی‌کند؛ به‌جای آن سه رابطهٔ «قبل / بعد / برابر» و دو وضعیت «A / B» دارد. چه چیزی از سیستم قبلی را به این سیستم منتقل می‌کنید؟"},
+{id:"q18", section:"D", type:"open", text:"اگر فرض اولیهٔ شما دربارهٔ این سیستم غلط از آب درآمده بود، چه می‌کردید: مدل را با استثنا حفظ می‌کردید یا اصلاح؟ چرا؟"},
+
+{id:"q19", section:"E", type:"open", text:"مواجهه با خطای بنیادی: دو هفته است شما و تیمتان شبانه‌روز روی یک ایده یا معماری کار کرده‌اید. ناگهان به‌تنهایی متوجه می‌شوید فرض بنیادی روز اول، از نظر منطقی کاملاً غلط بوده و کل دو هفته کار بی‌فایده است.\nسه جملهٔ اولی که همین الان در گروه تیم می‌نویسید، دقیقاً چیست؟ نحوهٔ اعلام شما چه فرقی می‌کند اگر مقصر خطا شخص دیگری در تیم بود؟"},
+{id:"q20", section:"E", type:"mcq", text:"پس از دو هفته متوجه می‌شوید فرض اصلی‌تان اشتباه بوده و چند تصمیم بعدی هم بر همان اساس گرفته شده. چه می‌کنید؟",
+  options:["فعلاً چیزی نمی‌گویم، شاید خودش حل شود","خطا، دامنهٔ اثرش و مسیر اصلاح را مشخص می‌کنم","توضیح می‌دهم تصمیم اولیه در آن شرایط منطقی بوده","پروژه را کاملاً از صفر شروع می‌کنم"], correct:1},
+{id:"q21", section:"E", type:"open", text:"عضوی دیگر ایدهٔ اصلی پروژه را داده و شما بخش عمدهٔ اجرا را انجام داده‌اید. پروژه موفق شده. چطور دربارهٔ اعتبار صحبت می‌کنید؟"},
+{id:"q22", section:"E", type:"mcq", text:"یک متخصص مشهور با نتیجهٔ شما مخالف است، اما داده‌هایی دارید که با نظر او ناسازگارند. واکنش شما؟",
+  options:["چون متخصص است، احتمالاً من اشتباه می‌کنم","نظرش را نادیده می‌گیرم، استقلال فکری مهم است","داده‌ها، روش اندازه‌گیری و فرض‌های هر دو طرف را بررسی می‌کنم","از دیگران می‌پرسم کدام‌مان را قبول دارند"], correct:2},
+
+{id:"q23", section:"F", type:"open", text:"دربارهٔ باور، نظریه یا قانونی (در علم، کدنویسی، هوش مصنوعی یا فلسفه) بنویسید که دو سال پیش صد در صد به آن مطمئن بودید، اما امروز فکر می‌کنید «ممکن است کاملاً در اشتباه بوده باشم». آن باور چه بود؟ دقیقاً چه داده یا مشاهده‌ای این ترک را در قطعیت‌تان ایجاد کرد؟"},
+{id:"q24", section:"F", type:"open", text:"موضوعی پیچیده را نام ببرید که در دو سال اخیر صرفاً از سر کنجکاوی شروع به یادگیری‌اش کردید اما نیمه‌کاره رهایش کردید یا سرعتتان به‌شدت افت کرد. تا کجا پیش رفتید؟ بزرگ‌ترین چالش شناختی‌تان چه بود و دقیقاً به چه دلیل متوقف شدید؟"},
+
+{id:"q25", section:"G", type:"mcq", text:"فقط این روابط را می‌دانیم: A با B مرتبط، B با C مرتبط، A مستقیماً با C مرتبط نیست، D با هر دوی A و C مرتبط است. آیا می‌توان نتیجه گرفت «D علت مشترک A و C است»؟",
+  options:["بله","خیر؛ چند ساختار دیگر هم با این داده‌ها سازگارند","بله، چون D با هر دو مرتبط است","خیر، چون A و C اصلاً نمی‌توانند مرتبط باشند"], correct:1, hasConf:true},
+{id:"q25b", section:"G", type:"open", text:"ساده‌ترین ساختاری که این روابط را توضیح می‌دهد در ذهنتان چه شکلی است؟ (متن یا ASCII)"},
+{id:"q26", section:"G", type:"mcq", text:"باور فعلی شما دربارهٔ سه مدل: A=۵۵٪، B=۴۰٪، C=۵٪. بعد از یک مشاهدهٔ جدید، احتمال A کمی و احتمال B هم افزایش می‌یابد، اما داده برای قطعیت کافی نیست. کدام جمله درست‌تر است؟",
+  options:["A ثابت شده است","A همچنان محتمل‌ترین مدل است اما هنوز عدم‌قطعیت هست","چون A بیشترین احتمال را دارد، نیازی به بررسی B نیست","اگر A بیش از ۵۰٪ باشد، از نظر علمی قطعی است"], correct:1, hasConf:true},
+{id:"q27", section:"G", type:"open", text:"شخص A (نزدیک‌تر به صحنه، دو بار سابقهٔ اشتباه): «چراغ قبل از باز شدن در روشن شد.» شخص B (دورتر، معمولاً دقیق): «چراغ بعد از باز شدن در روشن شد.» شخص C (فقط متکی به صدا): «نمی‌دانم، اما زمان باز شدن در دقیقاً ساعت X بود.»\nالان چه گزاره‌ای را به‌عنوان «حقیقت موقت» می‌پذیرید؟ چطور به فاصلهٔ فیزیکی، سابقهٔ خطا و دقت ذاتی وزن دادید؟"},
+{id:"q28", section:"G", type:"mcq", text:"در یکی از سؤالات این آزمون متوجه شدید هیچ‌کدام از گزینه‌ها کاملاً با استدلال شما سازگار نبود. چه کردید؟",
+  options:["یکی را انتخاب کردم، فرض کردم آزمون حتماً پاسخ قطعی دارد","نزدیک‌ترین را انتخاب کردم و وانمود کردم کاملاً درست است","نزدیک‌ترین را انتخاب کردم و محدودیتش را در توضیح ذکر کردم","سؤال را رها کردم"], correct:2},
+
+{id:"q29", section:"H", type:"open", maxLen:600, text:"فرضیهٔ جدید: یکی از مسائل این آزمون را انتخاب کنید. غیر از توضیحات موجود، یک فرضیهٔ جدید بدهید که با مشاهدات سازگار باشد. سپس بگویید چه آزمایشی طراحی می‌کنید تا فرضیهٔ خودتان را از دست‌کم یکی از فرضیه‌های دیگر متمایز کنید."},
+{id:"q30", section:"H", type:"open", maxLen:600, text:"تغییر مدل ذهنی: یکی از سؤال‌های این آزمون را انتخاب کنید که در ابتدا مدل ذهنی متفاوتی دربارهٔ آن داشتید. مدل اولیه چه بود؟ چه چیزی باعث تغییرش شد؟ مدل جدید چیست؟"},
+];
+
+// -------------------------------------------------------------------------
+// رندر
+// -------------------------------------------------------------------------
+const formRoot = document.getElementById("formRoot");
+const railList = document.getElementById("railList");
+const answers = {}; // id -> value
+const pageLoadTime = Date.now();
+const sectionFirstSeen = {};   // section code -> timestamp اولین ورود به بخش
+const itemFirstAnswered = {};  // item id -> timestamp اولین پاسخ
+
+// واژگان heuristic برای تفسیر سطحی متن‌های باز (نه فهم معنایی واقعی)
+const HEDGE_WORDS = ["بستگی دارد","احتمالاً","احتمالا","شاید","به نظر می‌رسد","اگر فرض کنیم","نمی‌توان قطعی گفت","ممکن است","تقریباً","تقریبا","در برخی شرایط","بسته به"];
+const ABSOLUTE_WORDS = ["قطعاً","قطعا","همیشه","هرگز","بدون شک","مطمئنم که","حتماً","حتما","صد در صد"];
+const BLAME_WORDS = ["تقصیر","مقصر","به‌خاطر او","به خاطر او","اونا مقصرن"];
+
+function countMatches(text, words){
+  if(!text) return 0;
+  let c = 0;
+  words.forEach(w=>{ if(text.includes(w)) c++; });
+  return c;
+}
+function wordCount(text){
+  if(!text) return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function qNumber(id){
+  // شمارهٔ نمایشی بر اساس ترتیب در آرایه (به‌جز آیتم‌های info)
+  let n = 0;
+  for(const it of ITEMS){
+    if(it.type !== "info") n++;
+    if(it.id === id) return n;
+  }
+  return "";
+}
+
+SECTIONS.forEach(sec=>{
+  const block = document.createElement("section");
+  block.className = "block";
+  block.id = "sec-" + sec.code;
+  block.innerHTML = `
+    <div class="block-head">
+      <span class="block-code">بخش ${sec.code}</span>
+      <span class="block-title">${sec.title}</span>
+      <span class="block-weight">${sec.weight}</span>
+    </div>
+    <div class="block-desc">${sec.desc}</div>
+  `;
+  ITEMS.filter(it=>it.section===sec.code).forEach(it=>{
+    const q = document.createElement("div");
+    q.className = "q";
+    let inner = "";
+    if(it.type !== "info"){
+      inner += `<div class="q-num mono">سؤال ${qNumber(it.id)}</div>`;
+    }
+    inner += `<div class="q-text">${it.text}</div>`;
+    if(it.data){
+      inner += `<div class="data-block">${it.data}</div>`;
+    }
+    if(it.type === "mcq"){
+      inner += `<div class="options" data-id="${it.id}">`;
+      it.options.forEach((opt,i)=>{
+        inner += `<label class="opt" data-idx="${i}">
+          <input type="radio" name="${it.id}" value="${i}">
+          <span>${opt}</span>
+        </label>`;
+      });
+      inner += `</div>`;
+      if(it.hasConf){
+        inner += `<div class="conf-row">
+          <label>سطح اطمینان از پاسخ:</label>
+          <select id="${it.id}_conf" data-id="${it.id}_conf">
+            <option value="">—</option>
+            <option value="1">۱ (کمتر از ۵۰٪)</option>
+            <option value="2">۲ (۵۰–۶۹٪)</option>
+            <option value="3">۳ (۷۰–۸۴٪)</option>
+            <option value="4">۴ (۸۵–۹۴٪)</option>
+            <option value="5">۵ (۹۵٪ یا بیشتر)</option>
+          </select>
+        </div>`;
+      }
+    } else if(it.type === "open"){
+      inner += `<textarea data-id="${it.id}" ${it.maxLen?`maxlength="${it.maxLen}"`:""} placeholder="پاسخ خود را بنویسید..."></textarea>`;
+      if(it.maxLen){
+        inner += `<div class="charcount"><span id="${it.id}_cc">0</span> / ${it.maxLen} کاراکتر</div>`;
+      }
+    } else if(it.type === "number"){
+      inner += `<input type="number" data-id="${it.id}" placeholder="عدد">`;
+    }
+    q.innerHTML = inner;
+    block.appendChild(q);
+  });
+  formRoot.appendChild(block);
+
+  const railItem = document.createElement("div");
+  railItem.className = "rail-item";
+  railItem.dataset.target = "sec-" + sec.code;
+  railItem.innerHTML = `<span class="code mono">${sec.code}</span><span>${sec.title}</span>`;
+  railItem.addEventListener("click", ()=>{
+    document.getElementById("sec-"+sec.code).scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  railList.appendChild(railItem);
+});
+
+// events: mcq select
+formRoot.addEventListener("change", e=>{
+  const t = e.target;
+  if(t.type === "radio"){
+    answers[t.name] = parseInt(t.value);
+    if(!itemFirstAnswered[t.name]) itemFirstAnswered[t.name] = Date.now();
+    const wrap = t.closest(".options");
+    wrap.querySelectorAll(".opt").forEach(o=>o.classList.remove("checked"));
+    t.closest(".opt").classList.add("checked");
+    updateProgress();
+  }
+  if(t.tagName === "SELECT"){
+    answers[t.dataset.id] = t.value;
+    if(!itemFirstAnswered[t.dataset.id]) itemFirstAnswered[t.dataset.id] = Date.now();
+    updateProgress();
+  }
+});
+formRoot.addEventListener("input", e=>{
+  const t = e.target;
+  if(t.tagName === "TEXTAREA"){
+    answers[t.dataset.id] = t.value;
+    if(!itemFirstAnswered[t.dataset.id]) itemFirstAnswered[t.dataset.id] = Date.now();
+    const cc = document.getElementById(t.dataset.id + "_cc");
+    if(cc) cc.textContent = t.value.length;
+    updateProgress();
+  }
+  if(t.tagName === "INPUT" && t.type === "number"){
+    answers[t.dataset.id] = t.value;
+    if(!itemFirstAnswered[t.dataset.id]) itemFirstAnswered[t.dataset.id] = Date.now();
+    updateProgress();
+  }
+});
+
+// scroll spy
+const railItems = ()=>document.querySelectorAll(".rail-item");
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      railItems().forEach(r=>r.classList.remove("active"));
+      const match = document.querySelector(`.rail-item[data-target="${entry.target.id}"]`);
+      if(match) match.classList.add("active");
+      const secCode = entry.target.id.replace("sec-","");
+      if(!sectionFirstSeen[secCode]) sectionFirstSeen[secCode] = Date.now();
+    }
+  });
+}, {rootMargin:"-20% 0px -70% 0px"});
+document.querySelectorAll("section.block").forEach(s=>observer.observe(s));
+
+// -------------------------------------------------------------------------
+// پیشرفت
+// -------------------------------------------------------------------------
+function requiredIds(){
+  return ITEMS.filter(it=>it.type!=="info").map(it=>it.id);
+}
+function updateProgress(){
+  const req = requiredIds();
+  const done = req.filter(id=>{
+    const v = answers[id];
+    return v !== undefined && v !== null && String(v).trim() !== "";
+  });
+  document.getElementById("progressCount").textContent = done.length;
+  document.getElementById("progressTotal").textContent = req.length;
+  document.getElementById("progressFill").style.width = (done.length/req.length*100) + "%";
+}
+updateProgress();
+
+// -------------------------------------------------------------------------
+// امتیازدهی خودکار (فقط آیتم‌های عینی) + آماده‌سازی گزارش
+// -------------------------------------------------------------------------
+function buildReport(){
+  const name = document.getElementById("pName").value.trim();
+  const contact = document.getElementById("pContact").value.trim();
+
+  let scorable = 0, correct = 0;
+  let calibPoints = []; // {correct:0/1, conf:1-5}
+
+  ITEMS.forEach(it=>{
+    if(it.type === "mcq" && it.correct !== undefined){
+      scorable++;
+      const given = answers[it.id];
+      const isCorrect = (given === it.correct) ? 1 : 0;
+      correct += isCorrect;
+      if(it.hasConf && answers[it.id+"_conf"]){
+        calibPoints.push({correct:isCorrect, conf:parseInt(answers[it.id+"_conf"])});
+      }
+    }
+    if(it.type === "number" && it.correctVal !== undefined){
+      scorable++;
+      const given = parseFloat(answers[it.id]);
+      if(given === it.correctVal) correct++;
+    }
+  });
+
+  const objectiveAccuracy = scorable ? Math.round(correct/scorable*100) : null;
+
+  let calibNote = "داده‌ای برای محاسبه ثبت نشد";
+  let calibGap = null;
+  if(calibPoints.length){
+    const avgConf = calibPoints.reduce((s,p)=>s+p.conf,0)/calibPoints.length; // 1-5
+    const avgConfPct = (avgConf-1)/4*100 + 10; // تخمین تقریبی به درصد
+    const avgAcc = calibPoints.reduce((s,p)=>s+p.correct,0)/calibPoints.length*100;
+    calibGap = Math.round(avgConfPct - avgAcc);
+    calibNote = `اطمینان متوسط≈${Math.round(avgConfPct)}٪ | دقت واقعی روی همان سؤالات=${Math.round(avgAcc)}٪ | فاصله=${calibGap>0?"+":""}${calibGap}`;
+  }
+
+  // ---- heuristic زبانی روی پاسخ‌های باز (سطحی، نه معنایی) ----
+  let hedgeCount=0, absoluteCount=0, blameCount=0, shallowCount=0, openTotal=0, wordsSum=0;
+  const openIds = ITEMS.filter(it=>it.type==="open").map(it=>it.id);
+  openIds.forEach(id=>{
+    const txt = answers[id] || "";
+    openTotal++;
+    hedgeCount += countMatches(txt, HEDGE_WORDS);
+    absoluteCount += countMatches(txt, ABSOLUTE_WORDS);
+    if(id==="q19") blameCount += countMatches(txt, BLAME_WORDS);
+    const wc = wordCount(txt);
+    wordsSum += wc;
+    if(wc < 12) shallowCount++;
+  });
+  const avgWords = openTotal ? Math.round(wordsSum/openTotal) : 0;
+
+  // زمان صرف‌شده در بخش D (سیستم K) — از اولین دیدن بخش تا آخرین پاسخ در آن بخش
+  const dIds = ITEMS.filter(it=>it.section==="D" && it.type!=="info").map(it=>it.id);
+  const dTimestamps = dIds.map(id=>itemFirstAnswered[id]).filter(Boolean);
+  let dDurationSec = null;
+  if(sectionFirstSeen["D"] && dTimestamps.length){
+    dDurationSec = Math.round((Math.max(...dTimestamps) - sectionFirstSeen["D"])/1000);
+  }
+  const dReasoningWords = wordCount(answers["q16"]||"") + wordCount(answers["q17"]||"") + wordCount(answers["q18"]||"");
+  const dSuspicious = (dDurationSec !== null && dDurationSec < 60 && dReasoningWords < 15);
+
+  // ---- سطح اولویت بازبینی (فقط برای چیدمان صف بررسی، نه قضاوت نهایی) ----
+  let redFlags = [];
+  if(absoluteCount > hedgeCount && absoluteCount >= 3) redFlags.push("زبان مطلق‌گرا بیش از حد");
+  if(blameCount > 0) redFlags.push("مقصریابی در سؤال بحران تیمی");
+  if(shallowCount >= Math.ceil(openTotal*0.4)) redFlags.push("بیش از ۴۰٪ پاسخ‌های باز کوتاه/سطحی");
+  if(dSuspicious) redFlags.push("حل سیستم K بسیار سریع بدون نمایش مسیر استدلال");
+
+  let tier = "بررسی عادی";
+  if(objectiveAccuracy !== null && objectiveAccuracy >= 70 && hedgeCount >= 3 && redFlags.length === 0){
+    tier = "بررسی اولویت‌دار (سیگنال‌های قوی)";
+  } else if(redFlags.length >= 2){
+    tier = "بررسی با احتیاط (چند سیگنال هشدار)";
+  }
+
+  let lines = [];
+  lines.push("=".repeat(60));
+  lines.push("گزارش آزمون سنجش شناختی و تحلیلی");
+  lines.push("=".repeat(60));
+  lines.push(`نام: ${name}`);
+  lines.push(`تماس: ${contact}`);
+  lines.push(`زمان ارسال: ${new Date().toLocaleString("fa-IR")}`);
+  lines.push("");
+  lines.push(`دقت خودکار (آیتم‌های عینی، از ${scorable}): ${objectiveAccuracy}%`);
+  lines.push(`کالیبراسیون اطمینان: ${calibNote}`);
+  lines.push("");
+  lines.push(`سطح اولویت بازبینی (heuristic، نه قضاوت نهایی): ${tier}`);
+  lines.push(`  عبارات عدم‌قطعیت در پاسخ‌های باز: ${hedgeCount} | عبارات مطلق‌گرا: ${absoluteCount}`);
+  lines.push(`  میانگین طول پاسخ باز: ${avgWords} کلمه | پاسخ‌های کوتاه/سطحی: ${shallowCount} از ${openTotal}`);
+  lines.push(`  زمان صرف‌شده در بخش D (سیستم K): ${dDurationSec !== null ? dDurationSec+" ثانیه" : "نامشخص"} | کلمات استدلال در Q16-18: ${dReasoningWords}`);
+  if(redFlags.length){
+    lines.push(`  پرچم‌های هشدار: ${redFlags.join("، ")}`);
+  } else {
+    lines.push(`  پرچم هشدار: هیچ`);
+  }
+  lines.push("(توجه: این سیگنال‌ها فقط برای اولویت‌بندی صف بازبینی‌اند و جای قضاوت انسانی روی متن کامل را نمی‌گیرند)");
+  lines.push("");
+
+  SECTIONS.forEach(sec=>{
+    lines.push("-".repeat(60));
+    lines.push(`بخش ${sec.code} — ${sec.title}`);
+    lines.push("-".repeat(60));
+    ITEMS.filter(it=>it.section===sec.code && it.type!=="info").forEach(it=>{
+      lines.push(`[سؤال ${qNumber(it.id)}] ${it.text.replace(/\n/g," ")}`);
+      if(it.type === "mcq"){
+        const given = answers[it.id];
+        const givenText = (given!==undefined) ? it.options[given] : "(پاسخ داده نشده)";
+        lines.push(`پاسخ: ${givenText}`);
+        if(it.hasConf){
+          lines.push(`سطح اطمینان: ${answers[it.id+"_conf"] || "—"}`);
+        }
+      } else if(it.type === "number"){
+        lines.push(`پاسخ: ${answers[it.id] !== undefined ? answers[it.id] : "(پاسخ داده نشده)"}`);
+      } else {
+        lines.push(`پاسخ: ${answers[it.id] || "(پاسخ داده نشده)"}`);
+      }
+      lines.push("");
+    });
+  });
+
+  return {text: lines.join("\n"), name, contact, objectiveAccuracy, tier, redFlags};
+}
+
+// -------------------------------------------------------------------------
+// ارسال به تلگرام
+// -------------------------------------------------------------------------
+async function sendToTelegram(report){
+  const {TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID} = CONFIG;
+  if(!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.includes("PUT_YOUR")) {
+    throw new Error("توکن تلگرام تنظیم نشده است");
+  }
+  const base = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+
+  // ۱) پیام کوتاه اطلاع‌رسانی
+  const flagLine = report.redFlags.length ? `⚠️ ${report.redFlags.join(" / ")}` : "بدون پرچم هشدار";
+  const summary = `📝 آزمون جدید ثبت شد\nنام: ${report.name}\nتماس: ${report.contact}\nدقت خودکار: ${report.objectiveAccuracy}%\nاولویت بازبینی: ${report.tier}\n${flagLine}`;
+  await fetch(`${base}/sendMessage`, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({chat_id: TELEGRAM_CHAT_ID, text: summary})
+  });
+
+  // ۲) فایل کامل گزارش
+  const blob = new Blob([report.text], {type:"text/plain;charset=utf-8"});
+  const fd = new FormData();
+  fd.append("chat_id", TELEGRAM_CHAT_ID);
+  fd.append("document", blob, `exam-${report.name.replace(/\s+/g,"_")}-${Date.now()}.txt`);
+  const res = await fetch(`${base}/sendDocument`, {method:"POST", body: fd});
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.description || "خطای نامشخص تلگرام");
+  return true;
+}
+
+// -------------------------------------------------------------------------
+// ارسال / ثبت
+// -------------------------------------------------------------------------
+document.getElementById("submitBtn").addEventListener("click", async ()=>{
+  const name = document.getElementById("pName").value.trim();
+  const contact = document.getElementById("pContact").value.trim();
+  const missingBox = document.getElementById("missingList");
+  const statusBox = document.getElementById("statusMsg");
+  missingBox.textContent = "";
+  statusBox.textContent = "";
+  statusBox.className = "status";
+
+  const missing = [];
+  if(!name) missing.push("نام و نام‌خانوادگی");
+  if(!contact) missing.push("راه تماس");
+  ITEMS.forEach(it=>{
+    if(it.type === "info") return;
+    const v = answers[it.id];
+    if(v === undefined || v === null || String(v).trim() === ""){
+      missing.push(`سؤال ${qNumber(it.id)}`);
+    }
+  });
+
+  if(missing.length){
+    missingBox.textContent = "موارد ناتمام: " + missing.join("، ");
+    return;
+  }
+
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  statusBox.textContent = "در حال ارسال...";
+
+  const report = buildReport();
+
+  try{
+    await sendToTelegram(report);
+    statusBox.textContent = "✓ با موفقیت ارسال شد.";
+    statusBox.className = "status ok";
+  }catch(err){
+    statusBox.textContent = "ارسال خودکار ناموفق بود (" + err.message + "). لطفاً از دکمه‌های پشتیبان پایین صفحه استفاده کنید.";
+    statusBox.className = "status err";
+  }
+
+  document.getElementById("reportBox").textContent = report.text;
+  document.getElementById("doneScreen").classList.add("show");
+  document.getElementById("doneScreen").scrollIntoView({behavior:"smooth"});
+
+  document.getElementById("mailBtn").onclick = ()=>{
+    const subject = encodeURIComponent(`نتیجه آزمون — ${report.name}`);
+    const body = encodeURIComponent(report.text.slice(0,6000)); // محدودیت طول mailto
+    window.location.href = `mailto:${CONFIG.ADMIN_EMAIL}?subject=${subject}&body=${body}`;
+  };
+  document.getElementById("downloadBtn").onclick = ()=>{
+    const blob = new Blob([report.text], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `exam-${report.name.replace(/\s+/g,"_")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  submitBtn.disabled = false;
+});
+</script>
+</body>
+</html>
