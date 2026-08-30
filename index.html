@@ -458,25 +458,36 @@ const GRADING_KEY = `کلید تفسیر آزمون شناختی (خلاصه):
 Risk Flags قابل بررسی: Authority Bias (پذیرش ادعا به‌خاطر جایگاه گوینده)، Overconfidence، Premature Closure (توقف زودهنگام از جست‌وجوی توضیح جایگزین)، Overfitting (توضیحات پیچیده برای نجات یک مدل)، Poor Model Revision (حفظ مدل با وجود ناسازگاری مکرر)، Confirmation Bias، Low Collaboration. یک نمونهٔ ضعیف به‌تنهایی Flag جدی ایجاد نمی‌کند؛ Flag وقتی ثبت شود که الگو در چند پاسخ مستقل تکرار شده باشد.
 خروجی موردنظر: برای هر محوری که پاسخ‌های زیر به آن مربوط می‌شوند، یکی از سطوح Very Low/Low/Moderate/High/Very High را با یک استدلال کوتاه بده، سپس Risk Flagهای مشهود را نام ببر. پاسخ را به فارسی، ساختاریافته و حداکثر در ۳۰۰ کلمه بنویس.`;
 
-async function getGeminiInterpretation(openQA){
-  if(!geminiConfigured()) return {text:null, note:"کلید Gemini تنظیم نشده؛ تفسیر هوش‌مصنوعی تولید نشد."};
-  try{
-    const qaText = openQA.map((p,i)=>`${i+1}. پرسش: ${p.q}\nپاسخ: ${p.a || "(بدون پاسخ)"}`).join("\n\n");
-    const prompt = `${GRADING_KEY}\n\n--- پاسخ‌های باز شرکت‌کننده (بدون پاسخ ثابت/واحد) ---\n\n${qaText}`;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent`;
-    const res = await fetch(url, {
-      method:"POST",
-      headers:{"Content-Type":"application/json", "x-goog-api-key": CONFIG.GEMINI_API_KEY},
-      body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    });
-    const json = await res.json();
-    if(json.error) throw new Error(json.error.message || "خطای نامشخص Gemini");
-    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-    return {text: text || null, note: text ? null : "پاسخی از Gemini دریافت نشد."};
-  }catch(err){
-    return {text:null, note:"خطا در دریافت تفسیر از Gemini: " + err.message};
-  }
-}
+async function getGeminiInterpretation(openQA){  
+  if(!geminiConfigured()) return {text:null, note:"کلید Gemini تنظیم نشده؛ تفسیر هوش‌مصنوعی تولید نشد."};  
+  try{  
+    const qaText = openQA.map((p,i)=>`${i+1}. پرسش: ${p.q}\nپاسخ: ${p.a || "(بدون پاسخ)"}`).join("\n\n");  
+    const prompt = `${GRADING_KEY}\n\n--- پاسخ‌های باز شرکت‌کننده (بدون پاسخ ثابت/واحد) ---\n\n${qaText}`;  
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;  
+    
+    const res = await fetch(url, {  
+      method: "POST",  
+      headers: { 
+        "Content-Type": "application/json" 
+      },  
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
+      })  
+    });  
+
+    const json = await res.json();  
+    if(json.error) throw new Error(json.error.message || "خطای نامشخص Gemini");  
+    
+    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;  
+    return {text: text || null, note: text ? null : "پاسخی از Gemini دریافت نشد."};  
+  }catch(err){  
+    return {text:null, note:"خطا در دریافت تفسیر از Gemini: " + err.message};  
+  }  
+}  
+
 
 function buildReport(name, age, contact, geminiResult){
   let scorable=0, correct=0, calibPoints=[];
