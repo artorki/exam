@@ -562,6 +562,30 @@ async function getGeminiInterpretation(openQA){
 
 function buildReport(name, age, contact, geminiResult){
   let scorable=0, correct=0, calibPoints=[];
+  let sectionScores = {};
+  let totalWeightedScore = 0;
+  const geminiScores = geminiResult?.scores || {};
+
+  const sectionWeights = {
+    "A": 0.25, // استدلال سیستمی
+    "B": 0.20, // تفکر نقاد
+    "C": 0.30, // یادگیری ساختار
+    "D": 0.15, // انعطاف شناختی
+    "E": 0.10  // کالیبراسیون
+  };
+  // محاسبه نمره بخش C (یادگیری ساختار)
+  const cIds = ["q5", "q6", "q7"];
+  let cPredCorrect = 0;
+  cIds.forEach(id => {
+    const it = ITEMS.find(i => i.id === id);
+    if (it && parseFloat(answers[id]) === it.correctVal) cPredCorrect++;
+  });
+  const cPredScore = (cPredCorrect / cIds.length) * 100;
+  const q8Score = (geminiScores["q8"]?.score || 0) / 5 * 100;
+  const cFinalScore = (cPredScore * 0.5) + (q8Score * 0.5);
+  sectionScores["C"] = cFinalScore;
+  totalWeightedScore += cFinalScore * sectionWeights["C"];
+
   ITEMS.forEach(it=>{
     if(it.type === "mcq" && it.correct !== undefined){
       scorable++;
