@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>پرسشنامه</title>
+<title>پرسشنامه تحلیلی-شناختی</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -101,14 +101,14 @@
 
   <main>
     <div class="top">
-      <div class="eyebrow">Cognitive & Analytical Assessment — Final</div>
+      <div class="eyebrow">Cognitive & Analytical Assessment</div>
       <h1>پرسشنامه آزمایشی</h1>
-      <p class="lead">۲۶ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
+      <p class="lead">۱۲ سؤال، حدود ۲۰ تا ۳۰ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
       <div class="instructions">
-        این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار، قضاوت در بحران و بازبینی باورها را می‌سنجد.
+        این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار و بازبینی باورها را می‌سنجد.
         <ul>
           <li>در سؤالات باز: دقیق و مصداقی بنویسید؛ فرض‌های خود را مشخص کنید؛ بین «می‌دانم» و «حدس می‌زنم» تفاوت بگذارید.</li>
-          <li>در سؤالات دارای «اطمینان»، سطح واقعی اطمینان خود را اعلام کنید — بیش‌ازحد مطمئن یا بیش‌ازحد محتاط بودن هم قابل مشاهده است.</li>
+          <li>در سؤالات دارای «اطمینان»، سطح واقعی اطمینان خود را اعلام کنید.</li>
           <li>محدودیت طول هر سؤال فقط راهنماست؛ رد شدن جزئی از آن مانع ارسال نمی‌شود.</li>
         </ul>
       </div>
@@ -140,7 +140,7 @@
 
     <div class="done-screen" id="doneScreen">
       <h2>سپاسگزاریم — آزمون ثبت شد</h2>
-      <p class="lead">گزارش کامل شما در ادامه قابل مشاهده است.</p>
+      <p class="lead">گزارش شما در ادامه قابل مشاهده است.</p>
       <div class="btn-row">
         <button class="btn btn-ghost" id="downloadBtn">دانلود متن پاسخ‌ها</button>
       </div>
@@ -164,18 +164,7 @@ function geminiConfigured(){
 }
 /* ========================================================================= */
 
-const SECTIONS = [
-  {code:"A", title:"استدلال سیستمی و علّی", weight:"۱۵٪", desc:""},
-  {code:"B", title:"شواهد، احتمال و طراحی آزمایش", weight:"۱۵٪", desc:""},
-  {code:"C", title:"الگو، مدل‌سازی و پیش‌بینی", weight:"۱۰٪", desc:""},
-  {code:"D", title:"یادگیری و انتقال ساختار - سیستم ناشناخته", weight:"۲۵٪ · مهم‌ترین بخش", desc:""},
-  {code:"E", title:"قضاوت در بحران و همکاری فکری", weight:"۱۵٪", desc:""},
-  {code:"F", title:"تواضع فکری و بازبینی باور", weight:"۱۰٪", desc:""},
-  {code:"G", title:"کالیبراسیون معرفتی و ارزیابی شواهد", weight:"۱۰٪", desc:""},
-];
-
-// type: mcq | open | number | number2 | info
-// extra: {id, label, wordLimit, required}  → فیلد توضیح ضمیمهٔ یک mcq
+// فقط یک آرایه SECTIONS (نسخه ۵ بخشی نهایی)
 const SECTIONS = [
   {code:"A", title:"استدلال سیستمی و علّی", weight:"۲۵٪", desc:"سنجش توانایی تفکیک علت از معلول و تحلیل سیستم‌های پیچیده"},
   {code:"B", title:"تفکر نقاد و ارزیابی شواهد", weight:"۲۰٪", desc:"سنجش تشخیص سوگیری، تحلیل داده‌ها و ارزیابی فرضیه‌ها"},
@@ -191,8 +180,7 @@ const ITEMS = [
     section: "A",
     type: "open",
     wordLimit: 150,
-    text: "یک جعبه‌سیاه یا دستگاه مکانیکی ناشناخته را بررسی می‌کنید:\nفرایند ورودی اجرا می‌شود → مکث دقیقاً ۲ ثانیه‌ای → تلاش برای ارسال یک سیگنال به محیط → ادامه فرایند.\nوقتی گیرنده سیگنال در محیط کاملاً مسدود و قطع است، آن مکث ۲ ثانیه‌ای همچنان با همان دقت رخ می‌دهد.\nالف) این مشاهده کدام فرضیه را تضعیف می‌کند؟\nب) کدام توضیح جایگزین را تقویت می‌کند؟\nج) اگر فقط مجاز به انجام یک آزمایش دیگر باشید، چه چیزی را تغییر می‌دهید و چرا؟",
-    rubric: "0: پاسخ نامرتبط یا سطحی. 2: تشخیص این‌که مکث وابسته به دریافت پاسخ از محیط نیست. 4: ارائه فرضیه تایمر داخلی یا فرایند موازی + پیشنهاد آزمایش تفکیک‌پذیر. 5: تفکیک دقیق شرط لازم و کافی، ارائه آزمایش با بالاترین قدرت تفکیک منطقی و پیش‌بینی خروجی‌ها."
+    text: "یک جعبه‌سیاه یا دستگاه مکانیکی ناشناخته را بررسی می‌کنید:\nفرایند ورودی اجرا می‌شود → مکث دقیقاً ۲ ثانیه‌ای → تلاش برای ارسال یک سیگنال به محیط → ادامه فرایند.\nوقتی گیرنده سیگنال در محیط کاملاً مسدود و قطع است، آن مکث ۲ ثانیه‌ای همچنان با همان دقت رخ می‌دهد.\nالف) این مشاهده کدام فرضیه را تضعیف می‌کند؟\nب) کدام توضیح جایگزین را تقویت می‌کند؟\nج) اگر فقط مجاز به انجام یک آزمایش دیگر باشید، چه چیزی را تغییر می‌دهید و چرا؟"
   },
   {
     id: "q2",
@@ -216,8 +204,7 @@ const ITEMS = [
     section: "B",
     type: "open",
     wordLimit: 150,
-    text: "آمارها نشان می‌دهند در شهرهایی که تعداد کتابخانه‌های عمومی بیشتر است، نرخ گزارش جرائم هم بالاتر است. یک تحلیل‌گر نتیجه می‌گیرد: «کتابخانه‌ها باعث افزایش جرم می‌شوند».\nحداقل دو توضیح جایگزین (متغیر پنهان یا میانجی) برای این همبستگی ارائه کنید و بگویید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است؟",
-    rubric: "0: رد کردن ادعا بدون ارائه دلیل ساختاری. 2: اشاره به یک متغیر سوم ساده (مثل جمعیت شهر). 4: ارائه دو متغیر پنهان قوی (مثل تراکم شهری، نرخ گزارش‌دهی) + نحوه کنترل آماری متغیرها. 5: تحلیل دقیق تمایز همبستگی و علیت + ارائه مکانیزم آزمایش یا تحلیل رگرسیون برای ایزوله کردن اثر."
+    text: "آمارها نشان می‌دهند در شهرهایی که تعداد کتابخانه‌های عمومی بیشتر است، نرخ گزارش جرائم هم بالاتر است. یک تحلیل‌گر نتیجه می‌گیرد: «کتابخانه‌ها باعث افزایش جرم می‌شوند».\nحداقل دو توضیح جایگزین (متغیر پنهان یا میانجی) برای این همبستگی ارائه کنید و بگویید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است؟"
   },
   {
     id: "q4",
@@ -250,8 +237,7 @@ const ITEMS = [
     section: "C",
     type: "open",
     wordLimit: 40,
-    text: "قانون حاکم بر این سیستم را در یک جمله شفاف و بدون ابهام توضیح دهید.",
-    rubric: "0: حدس‌های اشتباه. 2: کشف بخشی از الگوی ریاضی بدون فرمول‌بندی شرطی. 4: بیان کامل قانون (اگر A<B خروجی C+1، اگر A>B خروجی C+2، اگر A=B خروجی C+0). 5: بیان ساختاریافته، ریاضی‌وار و بدون حشو منطقی."
+    text: "قانون حاکم بر این سیستم را در یک جمله شفاف و بدون ابهام توضیح دهید."
   },
 
   // --- بخش D: انعطاف شناختی و بازبینی مدل ---
@@ -260,8 +246,7 @@ const ITEMS = [
     section: "D",
     type: "open",
     wordLimit: 180,
-    text: "یک باور یا فرض بنیادی درباره انسان، هنر، جامعه، یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.\nبنویسید: ۱) چه چیزی باعث شد بفهمید مدل قبلی‌تان ناقص است؟ ۲) خطای شناختی اصلی شما در مدل اول چه بود؟",
-    rubric: "0: پاسخ‌های کلیشه‌ای یا عدم اشاره به تغییر باور واقعی. 2: بیان یک تغییر ساده بدون تحلیل علت. 4: کالبدشکافی خطای تفکر خود و اشاره به داده یا تجربه گسلنده. 5: تحلیل فراشناختی عالی، تشخیص سوگیری تایید (Confirmation Bias) در خود، و تشریح مدل جدید بدون تعصب."
+    text: "یک باور یا فرض بنیادی درباره انسان، هنر، جامعه، یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.\nبنویسید: ۱) چه چیزی باعث شد بفهمید مدل قبلی‌تان ناقص است؟ ۲) خطای شناختی اصلی شما در مدل اول چه بود؟"
   },
   {
     id: "q10",
@@ -321,8 +306,7 @@ const sectionFirstSeen = {};
 const itemFirstAnswered = {};
 
 const HEDGE_WORDS = ["بستگی دارد","احتمالاً","احتمالا","شاید","به نظر می‌رسد","اگر فرض کنیم","نمی‌توان قطعی گفت","ممکن است","تقریباً","تقریبا","در برخی شرایط","بسته به"];
-const ABSOLUTE_WORDS = ["قطعاً","قطعا","همیشه","هرگز","بدون شک","مطمئنم که","حتماً","حتما","صد در صد"];
-const BLAME_WORDS = ["تقصیر","مقصر"];
+const ABSOLUTE_WORDS = ["قطعاً","قطعا","همیشه","هرگز","بدون شک","مطمئنم که","حتماً","حتما","صد در صد","اثبات می‌کند"];
 
 function countMatches(text, words){ if(!text) return 0; let c=0; words.forEach(w=>{if(text.includes(w))c++;}); return c; }
 function wordCount(text){ if(!text) return 0; return text.trim().split(/\s+/).filter(Boolean).length; }
@@ -393,12 +377,6 @@ SECTIONS.forEach(sec=>{
       }
     } else if(it.type === "number"){
       inner += `<input type="number" class="ans" data-id="${it.id}" placeholder="عدد">`;
-    } else if(it.type === "number2"){
-      inner += `<div class="numpair">
-        <div class="nf"><label>${it.labelX}</label><input type="number" class="ans" data-id="${it.id}_x" placeholder="عدد"></div>
-        <div class="nf"><label>${it.labelY}</label><input type="number" class="ans" data-id="${it.id}_y" placeholder="عدد"></div>
-      </div>`;
-      inner += renderExtra(it.extra);
     }
     q.innerHTML = inner;
     block.appendChild(q);
@@ -486,8 +464,7 @@ function requiredIds(){
   const ids = [];
   ITEMS.forEach(it=>{
     if(it.type === "info") return;
-    if(it.type === "number2"){ ids.push(it.id+"_x", it.id+"_y"); }
-    else { ids.push(it.id); }
+    ids.push(it.id);
     if(it.extra && it.extra.required) ids.push(it.extra.id);
   });
   return ids;
@@ -502,7 +479,7 @@ function updateProgress(){
 updateProgress();
 
 // -------------------------------------------------------------------------
-// Open Questions
+// Open Questions & API
 // -------------------------------------------------------------------------
 function collectOpenQA(){
   const list = [];
@@ -520,27 +497,17 @@ function collectOpenQA(){
   return list;
 }
 
-// -------------------------------------------------------------------------
-// Scoring + heuristic
-// -------------------------------------------------------------------------
-const GRADING_KEY = `کلید تفسیر آزمون شناختی (خلاصه):
-محورها و وزن: Systems Reasoning ۱۵٪، Causal Reasoning ۱۵٪، Evidence Evaluation ۱۵٪، Pattern/Modeling ۱۰٪، Learning & Transfer ۲۵٪ (مهم‌ترین)، Crisis Judgment & Collaboration ۱۰٪، Intellectual Humility ۵٪، Epistemic Calibration ۵٪.
-مقیاس نمره‌دهی پاسخ باز (۰ تا ۵): ۰=فاقد استدلال یا نامرتبط. ۱=مرتبط ولی ناقص/توصیفی. ۲=استدلال منطقی با عمق محدود. ۳=استدلال روشن و مبتنی بر شواهد. ۴=تشخیص متغیرهای مهم، فرض‌های پنهان و محدودیت استدلال. ۵=ممتاز؛ تفکیک چند فرضیهٔ رقیب، پیش‌بینی قابل‌آزمون، توان اصلاح مدل در برابر شواهد جدید.
-کالیبراسیون: اطمینان بالا به‌خودی‌خود امتیاز مثبت نیست؛ آنچه مهم است هم‌خوانی اطمینان با دقت واقعی است.
-Risk Flags قابل بررسی: Authority Bias (پذیرش ادعا به‌خاطر جایگاه گوینده)، Overconfidence، Premature Closure (توقف زودهنگام از جست‌وجوی توضیح جایگزین)، Overfitting (توضیحات پیچیده برای نجات یک مدل)، Poor Model Revision (حفظ مدل با وجود ناسازگاری مکرر)، Confirmation Bias، Low Collaboration. یک نمونهٔ ضعیف به‌تنهایی Flag جدی ایجاد نمی‌کند؛ Flag وقتی ثبت شود که الگو در چند پاسخ مستقل تکرار شده باشد.
-خروجی موردنظر: برای هر محوری که پاسخ‌های زیر به آن مربوط می‌شوند، یکی از سطوح Very Low/Low/Moderate/High/Very High را با یک استدلال کوتاه بده، سپس Risk Flagهای مشهود را نام ببر. پاسخ را به فارسی، ساختاریافته و حداکثر در ۳۰۰ کلمه بنویس.`;
+// پرامپت تصحیح شده و هماهنگ با ساختار جدید بدون درخواست JSON ساختاریافته پیچیده
+const GRADING_KEY = `شما یک ارزیاب ارشد علوم شناختی هستید.
+وظیفه شما: پاسخ‌های تشریحی کاربر را تحلیل کنید. آیا او توانسته ساختارهای پنهان را کشف کند؟ آیا دچار سوگیری تایید شده است؟
+خروجی موردنظر: یک تحلیل روان‌سنجی یکپارچه و ساختاریافته (حداکثر در ۳۰۰ کلمه) به زبان فارسی که سطح تفکر فرد را مشخص می‌کند و اگر سوگیری شناختی خاصی مشاهده می‌کنید (مانند Confirmation Bias یا Overconfidence) آن را نام ببرید.`;
 
 async function getGeminiInterpretation(openQA){  
   if(!geminiConfigured()) return {text:null, note:"آدرس Web App تنظیم نشده؛ تفسیر هوش‌مصنوعی تولید نشد."};  
   try{  
     const qaText = openQA.map((p,i)=>`${i+1}. پرسش: ${p.q}\nپاسخ: ${p.a || "(بدون پاسخ)"}`).join("\n\n");  
-    const prompt = `${GRADING_KEY}\n\n--- پاسخ‌های باز شرکت‌کننده (بدون پاسخ ثابت/واحد) ---\n\n${qaText}`;  
+    const prompt = `${GRADING_KEY}\n\n--- پاسخ‌های باز شرکت‌کننده ---\n\n${qaText}`;  
 
-    // درخواست دیگر مستقیماً به Gemini نمی‌رود؛ به Web App خودمان در Google Apps Script می‌رود
-    // و آن اسکریپت (با UrlFetchApp) کلید را سمت سرور به Gemini ارسال می‌کند.
-    // Content-Type عمداً "text/plain" است، نه "application/json"؛ این کار باعث می‌شود
-    // مرورگر پیش از ارسال یک درخواست preflight (OPTIONS) نفرستد — چون Apps Script Web App
-    // به درخواست‌های OPTIONS پاسخ نمی‌دهد و در غیر این صورت خطای CORS می‌گیرید.
     const res = await fetch(CONFIG.GAS_WEB_APP_URL, {
       method: "POST",
       headers: {
@@ -552,39 +519,22 @@ async function getGeminiInterpretation(openQA){
     const json = await res.json();
     if(json.error) throw new Error(json.error.message || "خطای نامشخص Gemini");  
     
-    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;  
+    // دریافت خروجی متنی هوش مصنوعی
+    let text = "";
+    if(json.candidates && json.candidates[0].content){
+        text = json.candidates[0].content.parts[0].text;
+    } else if(json.text) { 
+        text = json.text; 
+    }
+    
     return {text: text || null, note: text ? null : "پاسخی از Gemini دریافت نشد."};  
   }catch(err){  
     return {text:null, note:"خطا در دریافت تفسیر از Gemini: " + err.message};  
   }  
 }  
 
-
 function buildReport(name, age, contact, geminiResult){
   let scorable=0, correct=0, calibPoints=[];
-  let sectionScores = {};
-  let totalWeightedScore = 0;
-  const geminiScores = geminiResult?.scores || {};
-
-  const sectionWeights = {
-    "A": 0.25, // استدلال سیستمی
-    "B": 0.20, // تفکر نقاد
-    "C": 0.30, // یادگیری ساختار
-    "D": 0.15, // انعطاف شناختی
-    "E": 0.10  // کالیبراسیون
-  };
-  // محاسبه نمره بخش C (یادگیری ساختار)
-  const cIds = ["q5", "q6", "q7"];
-  let cPredCorrect = 0;
-  cIds.forEach(id => {
-    const it = ITEMS.find(i => i.id === id);
-    if (it && parseFloat(answers[id]) === it.correctVal) cPredCorrect++;
-  });
-  const cPredScore = (cPredCorrect / cIds.length) * 100;
-  const q8Score = (geminiScores["q8"]?.score || 0) / 5 * 100;
-  const cFinalScore = (cPredScore * 0.5) + (q8Score * 0.5);
-  sectionScores["C"] = cFinalScore;
-  totalWeightedScore += cFinalScore * sectionWeights["C"];
 
   ITEMS.forEach(it=>{
     if(it.type === "mcq" && it.correct !== undefined){
@@ -598,11 +548,6 @@ function buildReport(name, age, contact, geminiResult){
       scorable++;
       if(parseFloat(answers[it.id]) === it.correctVal) correct++;
     }
-    if(it.type === "number2"){
-      scorable += 2;
-      if(parseFloat(answers[it.id+"_x"]) === it.correctX) correct++;
-      if(parseFloat(answers[it.id+"_y"]) === it.correctY) correct++;
-    }
   });
   const objectiveAccuracy = scorable ? Math.round(correct/scorable*100) : null;
 
@@ -612,60 +557,67 @@ function buildReport(name, age, contact, geminiResult){
     const avgConfPct = (avgConf-1)/4*100+10;
     const avgAcc = calibPoints.reduce((s,p)=>s+p.correct,0)/calibPoints.length*100;
     calibGap = Math.round(avgConfPct-avgAcc);
-    calibNote = `اطمینان متوسط≈${Math.round(avgConfPct)}٪ | دقت واقعی روی همان سؤالات=${Math.round(avgAcc)}٪ | فاصله=${calibGap>0?"+":""}${calibGap}`;
+    calibNote = `اطمینان متوسط≈${Math.round(avgConfPct)}٪ | دقت واقعی=${Math.round(avgAcc)}٪ | فاصله=${calibGap>0?"+":""}${calibGap}`;
   }
 
   const openQA = collectOpenQA();
-  let hedgeCount=0, absoluteCount=0, blameCount=0, shallowCount=0, wordsSum=0;
+  let hedgeCount=0, absoluteCount=0, shallowCount=0, wordsSum=0;
   openQA.forEach(p=>{
     hedgeCount += countMatches(p.a, HEDGE_WORDS);
     absoluteCount += countMatches(p.a, ABSOLUTE_WORDS);
-    blameCount += countMatches(p.a, BLAME_WORDS);
     const wc = wordCount(p.a);
     wordsSum += wc;
     if(wc < 8) shallowCount++;
   });
   const avgWords = openQA.length ? Math.round(wordsSum/openQA.length) : 0;
 
-  const dIds = ["q12","q13","q14","q15"];
-  const dTimestamps = dIds.map(id=>itemFirstAnswered[id]).filter(Boolean);
-  let dDurationSec=null;
-  if(sectionFirstSeen["D"] && dTimestamps.length) dDurationSec = Math.round((Math.max(...dTimestamps)-sectionFirstSeen["D"])/1000);
-  const dReasoningWords = wordCount(answers["q16"]||"") + wordCount(answers["q17_explain"]||"");
-  const dSuspicious = (dDurationSec!==null && dDurationSec<60 && dReasoningWords<15);
+  // تصحیح باگ زمان‌بندی: ردیابی سوالات عددی بخش C (q5, q6, q7) به جای بخش حذف شده D
+  const cIds = ["q5","q6","q7"];
+  const cTimestamps = cIds.map(id=>itemFirstAnswered[id]).filter(Boolean);
+  let cDurationSec = null;
+  if(sectionFirstSeen["C"] && cTimestamps.length) {
+    cDurationSec = Math.round((Math.max(...cTimestamps)-sectionFirstSeen["C"])/1000);
+  }
+  const cReasoningWords = wordCount(answers["q8"]||"");
+  const cSuspicious = (cDurationSec !== null && cDurationSec < 15 && cReasoningWords < 5);
 
   let redFlags=[];
   if(absoluteCount > hedgeCount && absoluteCount>=3) redFlags.push("زبان مطلق‌گرا بیش از حد");
-  if(blameCount>0) redFlags.push("مقصریابی در سؤال بحران تیمی");
   if(shallowCount >= Math.ceil(openQA.length*0.4)) redFlags.push("بیش از ۴۰٪ پاسخ‌های باز کوتاه/سطحی");
-  if(dSuspicious) redFlags.push("حل سیستم ناشناخته بسیار سریع بدون نمایش مسیر استدلال");
+  if(cSuspicious) redFlags.push("حل سیستم عددی بسیار سریع بدون توضیح منطق");
 
   let tier = "بررسی عادی";
-  if(objectiveAccuracy!==null && objectiveAccuracy>=70 && hedgeCount>=3 && redFlags.length===0) tier="بررسی اولویت‌دار (سیگنال‌های قوی)";
+  if(objectiveAccuracy!==null && objectiveAccuracy>=75 && hedgeCount>=2 && redFlags.length===0) tier="بررسی اولویت‌دار (سیگنال‌های قوی)";
   else if(redFlags.length>=2) tier="بررسی با احتیاط (چند سیگنال هشدار)";
 
   let lines=[];
   lines.push("=".repeat(60));
-  lines.push("گزارش آزمون سنجش شناختی، تحلیلی و فکری");
+  lines.push("گزارش آزمون سنجش شناختی");
   lines.push("=".repeat(60));
   lines.push(`نام: ${name}`);
   lines.push(`سن: ${age}`);
   if(contact) lines.push(`تماس: ${contact}`);
   lines.push(`زمان ارسال: ${new Date().toLocaleString("fa-IR")}`);
   lines.push("");
-  lines.push(`دقت خودکار (آیتم‌های عینی، از ${scorable}): ${objectiveAccuracy}%`);
-  lines.push(`کالیبراسیون اطمینان: ${calibNote}`);
+  lines.push(`دقت سوالات عینی و تستی: ${objectiveAccuracy}%`);
+  lines.push(`وضعیت کالیبراسیون: ${calibNote}`);
   lines.push("");
-  lines.push(`سطح اولویت بازبینی (heuristic): ${tier}`);
-  lines.push(`  عبارات عدم‌قطعیت: ${hedgeCount} | عبارات مطلق‌گرا: ${absoluteCount} | میانگین طول پاسخ باز: ${avgWords} کلمه`);
-  lines.push(`  پاسخ‌های کوتاه/سطحی: ${shallowCount} از ${openQA.length} | زمان بخش D: ${dDurationSec!==null?dDurationSec+" ثانیه":"نامشخص"}`);
+  lines.push(`اولویت بررسی خودکار: ${tier}`);
+  lines.push(`  کلمات عدم‌قطعیت: ${hedgeCount} | کلمات مطلق: ${absoluteCount} | میانگین طول پاسخ: ${avgWords} کلمه`);
   lines.push(`  پرچم‌های هشدار: ${redFlags.length?redFlags.join("، "):"هیچ"}`);
   lines.push("");
   lines.push("-".repeat(60));
   lines.push("تفسیر هوش‌مصنوعی (Gemini)");
   lines.push("-".repeat(60));
+  
   if(geminiResult && geminiResult.text){
-    lines.push(geminiResult.text);
+    // در صورتی که مدل خروجی JSON داد آن را به متن تمیز تبدیل می‌کنیم
+    try {
+       const parsed = JSON.parse(geminiResult.text);
+       lines.push(JSON.stringify(parsed, null, 2));
+    } catch(e) {
+       lines.push(geminiResult.text);
+    }
   } else {
     lines.push(geminiResult ? geminiResult.note : "تولید نشد.");
   }
@@ -683,8 +635,6 @@ function buildReport(name, age, contact, geminiResult){
         if(it.hasConf) lines.push(`سطح اطمینان: ${answers[it.id+"_conf"] || "—"}`);
       } else if(it.type === "number"){
         lines.push(`پاسخ: ${answers[it.id]!==undefined ? answers[it.id] : "(پاسخ داده نشده)"}`);
-      } else if(it.type === "number2"){
-        lines.push(`پاسخ: X=${answers[it.id+"_x"]??"—"} | Y=${answers[it.id+"_y"]??"—"}`);
       } else {
         lines.push(`پاسخ: ${answers[it.id] || "(پاسخ داده نشده)"}`);
       }
@@ -703,15 +653,14 @@ function buildReport(name, age, contact, geminiResult){
 // -------------------------------------------------------------------------
 async function sendToTelegram(report){
   const flagLine = report.redFlags.length ? `⚠️ ${report.redFlags.join(" / ")}` : "بدون پرچم هشدار";
-  const interpSnippet = report.geminiResult && report.geminiResult.text
-    ? report.geminiResult.text.slice(0,600) + (report.geminiResult.text.length>600 ? "…(ادامه در فایل پیوست)" : "")
-    : (report.geminiResult ? report.geminiResult.note : "تفسیر تولید نشد");
+  
+  let aiSummary = "تفسیر تولید نشد";
+  if(report.geminiResult && report.geminiResult.text) {
+     aiSummary = report.geminiResult.text.slice(0,500) + (report.geminiResult.text.length>500 ? "..." : "");
+  }
 
-  const summary = `📝 آزمون جدید ثبت شد\nنام: ${report.name}\nسن: ${report.age}\nدقت خودکار: ${report.objectiveAccuracy}%\nاولویت بازبینی: ${report.tier}\n${flagLine}\n\n🤖 تفسیر هوش‌مصنوعی:\n${interpSnippet}`;
+  const summary = `📝 آزمون جدید ثبت شد\nنام: ${report.name}\nسن: ${report.age}\nدقت تستی: ${report.objectiveAccuracy}%\nاولویت: ${report.tier}\n${flagLine}\n\n🤖 تفسیر AI:\n${aiSummary}`;
 
-  // ارسال دیگر مستقیماً به api.telegram.org نمی‌رود؛ متن پیام و فایل گزارش را
-  // به Web App خودمان می‌فرستیم و آن اسکریپت (با توکن/چت‌آیدی نگه‌داشته‌شده سمت سرور)
-  // با UrlFetchApp پیام و سند را به تلگرام می‌فرستد.
   const res = await fetch(CONFIG.GAS_WEB_APP_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -758,24 +707,24 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
   let geminiResult = null;
   if(geminiConfigured()){
     statusBox.className = "status info";
-    statusBox.textContent = "gmnai...";
+    statusBox.textContent = "در حال تحلیل روان‌سنجی هوش مصنوعی...";
     geminiResult = await getGeminiInterpretation(collectOpenQA());
   }
 
   const report = buildReport(name, age, contact, geminiResult);
 
   if(telegramConfigured()){
-    statusBox.textContent = "sndttme...";
+    statusBox.textContent = "در حال ارسال به تلگرام...";
     try{
       await sendToTelegram(report);
-      statusBox.textContent = "sndttme: 200";
+      statusBox.textContent = "اطلاعات با موفقیت ارسال شد.";
       statusBox.className = "status ok";
     }catch(err){
-      statusBox.textContent = "tmeerr: " + err.message;
+      statusBox.textContent = "خطا در ارسال تلگرام: " + err.message;
       statusBox.className = "status err";
     }
   } else {
-    statusBox.textContent = "کلید تنظیم نشده — نتیجه به شما نمایش داده می‌شود.";
+    statusBox.textContent = "ارسال به سرور تنظیم نشده — نتیجه صرفاً دانلود می‌شود.";
     statusBox.className = "status info";
   }
 
@@ -797,3 +746,4 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
 </script>
 </body>
 </html>
+
