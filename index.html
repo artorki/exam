@@ -154,10 +154,7 @@
    Admin Settings
    ========================================================================= */
 const CONFIG = {
-  // آدرس Web App خروجی از Google Apps Script (مرحلهٔ Deploy > New deployment)
-  // نه کلید Gemini و نه توکن/چت‌آیدی تلگرام دیگر اینجا نیستند؛
-  // هر دو داخل خود اسکریپت گوگل (سمت سرور) نگهداری می‌شوند.
-  GAS_WEB_APP_URL:    "PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"
+  GAS_WEB_APP_URL: "https://script.google.com/macros/s/AKfycbx1HFPK0_KxUwLbPNRVDVuKPiQn6p9SaAS_h4gbHzDNVRIRYx_fby_uukvZQBxYWbEFcw/exec"
 };
 function telegramConfigured(){
   return CONFIG.GAS_WEB_APP_URL && !CONFIG.GAS_WEB_APP_URL.includes("PUT_YOUR");
