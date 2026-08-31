@@ -102,7 +102,7 @@
   <main>
     <div class="top">
       <div class="eyebrow">Cognitive & Analytical Assessment — Final</div>
-      <h1>پرسشنامه آزمایشی</h1>
+      <h1>پرسشنامه</h1>
       <p class="lead">۲۶ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
       <div class="instructions">
         این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار، قضاوت در بحران و بازبینی باورها را می‌سنجد.
@@ -158,7 +158,7 @@ const CONFIG = {
   TELEGRAM_CHAT_ID:   "5446661281",
   // آدرس Web App خروجی از Google Apps Script (مرحلهٔ Deploy > New deployment)
   // کلید Gemini دیگر اینجا نیست؛ داخل خود اسکریپت گوگل (سمت سرور) نگهداری می‌شود.
-  GAS_WEB_APP_URL:    "PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"
+  GAS_WEB_APP_URL:    "https://script.google.com/macros/s/AKfycbz1NljBD1_PUybjJt25Jn4agy__azG9b_oGeGgWuheqPxw55YvxvhW3QVhN87kumW_SnQ/exec"
 };
 function telegramConfigured(){
   return CONFIG.TELEGRAM_BOT_TOKEN && !CONFIG.TELEGRAM_BOT_TOKEN.includes("PUT_YOUR")
