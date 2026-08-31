@@ -102,7 +102,7 @@
   <main>
     <div class="top">
       <div class="eyebrow">Cognitive & Analytical Assessment — Final</div>
-      <h1>پرسشنامه</h1>
+      <h1>پرسشنامه آزمایشی</h1>
       <p class="lead">۲۶ سؤال، حدود ۴۵ تا ۵۵ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
       <div class="instructions">
         این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار، قضاوت در بحران و بازبینی باورها را می‌سنجد.
@@ -154,15 +154,13 @@
    Admin Settings
    ========================================================================= */
 const CONFIG = {
-  TELEGRAM_BOT_TOKEN: "8822548207:AAFs2QhlkLwqbjR2OCciLn6dsqphi_6YZLc",
-  TELEGRAM_CHAT_ID:   "5446661281",
   // آدرس Web App خروجی از Google Apps Script (مرحلهٔ Deploy > New deployment)
-  // کلید Gemini دیگر اینجا نیست؛ داخل خود اسکریپت گوگل (سمت سرور) نگهداری می‌شود.
-  GAS_WEB_APP_URL:    "https://script.google.com/macros/s/AKfycbz1NljBD1_PUybjJt25Jn4agy__azG9b_oGeGgWuheqPxw55YvxvhW3QVhN87kumW_SnQ/exec"
+  // نه کلید Gemini و نه توکن/چت‌آیدی تلگرام دیگر اینجا نیستند؛
+  // هر دو داخل خود اسکریپت گوگل (سمت سرور) نگهداری می‌شوند.
+  GAS_WEB_APP_URL:    "PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"
 };
 function telegramConfigured(){
-  return CONFIG.TELEGRAM_BOT_TOKEN && !CONFIG.TELEGRAM_BOT_TOKEN.includes("PUT_YOUR")
-      && CONFIG.TELEGRAM_CHAT_ID && !CONFIG.TELEGRAM_CHAT_ID.includes("PUT_YOUR");
+  return CONFIG.GAS_WEB_APP_URL && !CONFIG.GAS_WEB_APP_URL.includes("PUT_YOUR");
 }
 function geminiConfigured(){
   return CONFIG.GAS_WEB_APP_URL && !CONFIG.GAS_WEB_APP_URL.includes("PUT_YOUR");
@@ -475,7 +473,7 @@ async function getGeminiInterpretation(openQA){
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify({ action: "gemini", prompt: prompt })
     });
 
     const json = await res.json();
@@ -607,25 +605,28 @@ function buildReport(name, age, contact, geminiResult){
 // Send to Bot
 // -------------------------------------------------------------------------
 async function sendToTelegram(report){
-  const base = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}`;
   const flagLine = report.redFlags.length ? `⚠️ ${report.redFlags.join(" / ")}` : "بدون پرچم هشدار";
   const interpSnippet = report.geminiResult && report.geminiResult.text
     ? report.geminiResult.text.slice(0,600) + (report.geminiResult.text.length>600 ? "…(ادامه در فایل پیوست)" : "")
     : (report.geminiResult ? report.geminiResult.note : "تفسیر تولید نشد");
 
   const summary = `📝 آزمون جدید ثبت شد\nنام: ${report.name}\nسن: ${report.age}\nدقت خودکار: ${report.objectiveAccuracy}%\nاولویت بازبینی: ${report.tier}\n${flagLine}\n\n🤖 تفسیر هوش‌مصنوعی:\n${interpSnippet}`;
-  await fetch(`${base}/sendMessage`, {
-    method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({chat_id: CONFIG.TELEGRAM_CHAT_ID, text: summary})
-  });
 
-  const blob = new Blob([report.text], {type:"text/plain;charset=utf-8"});
-  const fd = new FormData();
-  fd.append("chat_id", CONFIG.TELEGRAM_CHAT_ID);
-  fd.append("document", blob, `exam-${report.name.replace(/\s+/g,"_")}-${Date.now()}.txt`);
-  const res = await fetch(`${base}/sendDocument`, {method:"POST", body: fd});
+  // ارسال دیگر مستقیماً به api.telegram.org نمی‌رود؛ متن پیام و فایل گزارش را
+  // به Web App خودمان می‌فرستیم و آن اسکریپت (با توکن/چت‌آیدی نگه‌داشته‌شده سمت سرور)
+  // با UrlFetchApp پیام و سند را به تلگرام می‌فرستد.
+  const res = await fetch(CONFIG.GAS_WEB_APP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      action: "telegram",
+      summary: summary,
+      reportText: report.text,
+      filename: `exam-${report.name.replace(/\s+/g,"_")}-${Date.now()}.txt`
+    })
+  });
   const json = await res.json();
-  if(!json.ok) throw new Error(json.description || "tmeerr");
+  if(!json.ok) throw new Error(json.error || json.description || "tmeerr");
   return true;
 }
 
