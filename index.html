@@ -156,15 +156,16 @@
 const CONFIG = {
   TELEGRAM_BOT_TOKEN: "8822548207:AAFs2QhlkLwqbjR2OCciLn6dsqphi_6YZLc",
   TELEGRAM_CHAT_ID:   "5446661281",
-  GEMINI_API_KEY:     "AQ.Ab8RN6ISYKg84iz95pJuFvPnxMg6y9uboXavPfRst3WIPzfyCg",
-  GEMINI_MODEL:       "gemini-3.5-flash-lite"
+  // آدرس Web App خروجی از Google Apps Script (مرحلهٔ Deploy > New deployment)
+  // کلید Gemini دیگر اینجا نیست؛ داخل خود اسکریپت گوگل (سمت سرور) نگهداری می‌شود.
+  GAS_WEB_APP_URL:    "PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"
 };
 function telegramConfigured(){
   return CONFIG.TELEGRAM_BOT_TOKEN && !CONFIG.TELEGRAM_BOT_TOKEN.includes("PUT_YOUR")
       && CONFIG.TELEGRAM_CHAT_ID && !CONFIG.TELEGRAM_CHAT_ID.includes("PUT_YOUR");
 }
 function geminiConfigured(){
-  return CONFIG.GEMINI_API_KEY && !CONFIG.GEMINI_API_KEY.includes("PUT_YOUR");
+  return CONFIG.GAS_WEB_APP_URL && !CONFIG.GAS_WEB_APP_URL.includes("PUT_YOUR");
 }
 /* ========================================================================= */
 
@@ -459,26 +460,25 @@ Risk Flags قابل بررسی: Authority Bias (پذیرش ادعا به‌خا�
 خروجی موردنظر: برای هر محوری که پاسخ‌های زیر به آن مربوط می‌شوند، یکی از سطوح Very Low/Low/Moderate/High/Very High را با یک استدلال کوتاه بده، سپس Risk Flagهای مشهود را نام ببر. پاسخ را به فارسی، ساختاریافته و حداکثر در ۳۰۰ کلمه بنویس.`;
 
 async function getGeminiInterpretation(openQA){  
-  if(!geminiConfigured()) return {text:null, note:"کلید Gemini تنظیم نشده؛ تفسیر هوش‌مصنوعی تولید نشد."};  
+  if(!geminiConfigured()) return {text:null, note:"آدرس Web App تنظیم نشده؛ تفسیر هوش‌مصنوعی تولید نشد."};  
   try{  
     const qaText = openQA.map((p,i)=>`${i+1}. پرسش: ${p.q}\nپاسخ: ${p.a || "(بدون پاسخ)"}`).join("\n\n");  
     const prompt = `${GRADING_KEY}\n\n--- پاسخ‌های باز شرکت‌کننده (بدون پاسخ ثابت/واحد) ---\n\n${qaText}`;  
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;  
-    
-    const res = await fetch(url, {  
-      method: "POST",  
-      headers: { 
-        "Content-Type": "application/json" 
-      },  
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })  
-    });  
+    // درخواست دیگر مستقیماً به Gemini نمی‌رود؛ به Web App خودمان در Google Apps Script می‌رود
+    // و آن اسکریپت (با UrlFetchApp) کلید را سمت سرور به Gemini ارسال می‌کند.
+    // Content-Type عمداً "text/plain" است، نه "application/json"؛ این کار باعث می‌شود
+    // مرورگر پیش از ارسال یک درخواست preflight (OPTIONS) نفرستد — چون Apps Script Web App
+    // به درخواست‌های OPTIONS پاسخ نمی‌دهد و در غیر این صورت خطای CORS می‌گیرید.
+    const res = await fetch(CONFIG.GAS_WEB_APP_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({ prompt: prompt })
+    });
 
-    const json = await res.json();  
+    const json = await res.json();
     if(json.error) throw new Error(json.error.message || "خطای نامشخص Gemini");  
     
     const text = json.candidates?.[0]?.content?.parts?.[0]?.text;  
