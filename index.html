@@ -1,331 +1,835 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>پرسشنامه تحلیلی-شناختی</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --paper: #ECE7DA; --paper-2: #E2DCCB; --ink: #1E211C; --ink-soft: #54544C;
-    --line: #CFC6AE; --accent: #A63B2C; --accent-soft: #A63B2C22; --ok: #3D6B4C; --radius: 4px;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Vazirmatn', Tahoma, sans-serif; line-height: 1.75; -webkit-font-smoothing: antialiased; }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-  
-  .shell { display: grid; grid-template-columns: 220px minmax(0, 760px); justify-content: center; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 40px 24px 120px; }
-  @media (max-width: 880px) { .shell { grid-template-columns: 1fr; padding: 24px 16px 100px; } .rail { display: none; } }
-  
-  .rail { position: sticky; top: 40px; align-self: start; height: fit-content; }
-  .rail-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .12em; color: var(--ink-soft); margin-bottom: 14px; text-transform: uppercase; }
-  .rail-item { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; font-size: 13px; color: var(--ink-soft); border-right: 2px solid transparent; padding-right: 12px; margin-right: -12px; cursor: pointer; transition: color .2s, border-color .2s; }
-  .rail-item .code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
-  .rail-item.active { color: var(--ink); border-color: var(--accent); font-weight: 600; }
-  .rail-item.active .code { color: var(--accent); }
-  
-  .rail-progress { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
-  .rail-bar { height: 3px; background: var(--line); margin-top: 8px; position: relative; overflow: hidden; border-radius: var(--radius); }
-  .rail-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s; }
-  
-  .top { padding-top: 8px; margin-bottom: 56px; }
-  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
-  h1 { font-size: 28px; font-weight: 900; margin: 10px 0 16px; letter-spacing: -.01em; }
-  .lead { color: var(--ink-soft); font-size: 15px; max-width: 60ch; }
-  
-  .instructions { margin-top: 24px; padding: 18px 20px; background: var(--paper-2); border-right: 3px solid var(--accent); font-size: 14px; color: var(--ink-soft); border-radius: var(--radius); }
-  .instructions ul { margin: 8px 0 0; padding-right: 20px; }
-  
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
-  .field input[type=text], .field input[type=number] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14px; border-radius: var(--radius); transition: border-color 0.2s; }
-  .field input:focus { outline: none; border-color: var(--accent); }
-  .field-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
-  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
-  
-  section.block { margin-bottom: 64px; scroll-margin-top: 40px; }
-  .block-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-  .block-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 600; }
-  .block-title { font-size: 19px; font-weight: 700; }
-  .block-weight { margin-right: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
-  .block-desc { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 28px; }
-  
-  .q { margin-bottom: 36px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
-  .q:last-child { border-bottom: none; }
-  .q-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; }
-  .q-text { font-size: 15.5px; margin-bottom: 14px; white-space: pre-line; }
-  .data-block { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; background: var(--paper-2); padding: 14px 16px; margin: 10px 0 16px; white-space: pre; overflow-x: auto; border-radius: var(--radius); }
-  
-  .options { display: flex; flex-direction: column; gap: 8px; }
-  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-size: 14px; border-radius: var(--radius); transition: border-color .15s, background .15s; }
-  .opt:hover { border-color: var(--ink-soft); }
-  .opt.checked { border-color: var(--accent); background: var(--accent-soft); }
-  .opt input { margin-top: 3px; accent-color: var(--accent); }
-  
-  textarea, input[type=number].ans { width: 100%; padding: 12px 14px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; border-radius: var(--radius); resize: vertical; transition: border-color 0.2s; }
-  textarea:focus, input[type=number].ans:focus { outline: none; border-color: var(--accent); }
-  textarea { min-height: 80px; line-height: 1.7; }
-  input[type=number].ans { width: 140px; font-family: 'JetBrains Mono', monospace; }
-  
-  .charcount { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 4px; text-align: left; }
-  .charcount.warn { color: var(--accent); font-weight: bold; }
-  
-  .extra-field { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
-  .extra-field label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
-  .conf-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-  .conf-row label { font-size: 13px; color: var(--ink-soft); }
-  select { padding: 8px 10px; border: 1px solid var(--line); background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; border-radius: var(--radius); outline: none; }
-  select:focus { border-color: var(--accent); }
-  
-  .submit-zone { margin-top: 40px; padding: 28px; background: var(--paper-2); border-radius: var(--radius); position: sticky; bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.08); z-index: 10; }
-  .submit-zone h3 { margin: 0 0 8px; font-size: 16px; }
-  .submit-zone p { margin: 0 0 18px; font-size: 13px; color: var(--ink-soft); }
-  .submit-zone.done { position: static; box-shadow: none; display: none; }
-  
-  .btn { appearance: none; border: none; padding: 13px 26px; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer; border-radius: var(--radius); transition: opacity .15s, transform .1s, background-color .2s; }
-  .btn:active { transform: scale(.98); }
-  .btn-primary { background: var(--ink); color: var(--paper); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-ghost { background: transparent; border: 1px solid var(--ink-soft); color: var(--ink); }
-  .btn-ghost:hover { background: rgba(0,0,0,0.05); }
-  
-  .status { margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace; white-space: pre-line; transition: color 0.3s; }
-  .status.ok { color: var(--ok); }
-  .status.err { color: var(--accent); }
-  .status.info { color: var(--ink-soft); }
-  .missing-list { margin-top: 12px; font-size: 12.5px; color: var(--accent); }
-  
-  .done-screen { display: none; }
-  .done-screen.show { display: block; animation: fadeIn 0.5s ease; }
-  .done-screen h2 { font-size: 22px; }
-  .report-box { margin-top: 18px; padding: 16px; background: #fff; border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; line-height: 1.6; border-radius: var(--radius); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-  
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--ink-soft); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-left: 8px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ارزیابی شناختی و تحلیلی</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #ECE7DA;
+      --paper-2: #E2DCCB;
+      --ink: #1E211C;
+      --ink-soft: #54544C;
+      --line: #CFC6AE;
+      --accent: #A63B2C;
+      --accent-soft: #A63B2C22;
+      --ok: #3D6B4C;
+      --warn: #8A5A18;
+      --radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      line-height: 1.78;
+      -webkit-font-smoothing: antialiased;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .hidden { display: none !important; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 760px);
+      justify-content: center;
+      gap: 48px;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 24px 120px;
+    }
+
+    @media (max-width: 880px) {
+      .shell {
+        grid-template-columns: 1fr;
+        padding: 24px 16px 90px;
+      }
+      .rail { display: none; }
+    }
+
+    .rail {
+      position: sticky;
+      top: 40px;
+      align-self: start;
+      height: fit-content;
+    }
+    .rail-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .rail-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--ink-soft);
+      border-right: 2px solid transparent;
+      padding-right: 12px;
+      margin-right: -12px;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .rail-item .code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+    .rail-item.active {
+      color: var(--ink);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .rail-item.active .code { color: var(--accent); }
+    .rail-progress {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+    .rail-bar {
+      height: 3px;
+      background: var(--line);
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+    .rail-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width .3s;
+    }
+
+    .top {
+      padding-top: 8px;
+      margin-bottom: 56px;
+    }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .14em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 10px 0 16px;
+      letter-spacing: -.01em;
+    }
+    .lead {
+      color: var(--ink-soft);
+      font-size: 15px;
+      max-width: 62ch;
+    }
+
+    .instructions,
+    .consent-box {
+      margin-top: 24px;
+      padding: 18px 20px;
+      background: var(--paper-2);
+      border-right: 3px solid var(--accent);
+      font-size: 14px;
+      color: var(--ink-soft);
+      border-radius: var(--radius);
+    }
+    .instructions ul {
+      margin: 8px 0 0;
+      padding-right: 20px;
+    }
+    .instructions li { margin-bottom: 4px; }
+
+    .consent-box {
+      border-right-color: var(--ink);
+    }
+    .consent-title {
+      color: var(--ink);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--ink);
+    }
+    .consent-check input {
+      margin-top: 5px;
+      accent-color: var(--accent);
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+    .field input[type=text],
+    .field input[type=number] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14px;
+      border-radius: var(--radius);
+      transition: border-color .2s;
+    }
+    .field input:focus,
+    textarea:focus,
+    input[type=number].ans:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 520px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    section.block {
+      margin-bottom: 64px;
+      scroll-margin-top: 40px;
+    }
+    .block-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .block-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .block-title {
+      font-size: 19px;
+      font-weight: 700;
+    }
+    .block-weight {
+      margin-right: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+    .block-desc {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin-bottom: 28px;
+    }
+
+    .q {
+      margin-bottom: 36px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+    .q:last-child { border-bottom: none; }
+    .q-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+    .q-text {
+      font-size: 15.5px;
+      margin-bottom: 14px;
+      white-space: pre-line;
+    }
+    .data-block {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      background: var(--paper-2);
+      padding: 14px 16px;
+      margin: 10px 0 16px;
+      white-space: pre;
+      overflow-x: auto;
+      border-radius: var(--radius);
+      direction: ltr;
+      text-align: left;
+    }
+    .answer-hint {
+      margin: -4px 0 12px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: var(--radius);
+      transition: border-color .15s, background .15s;
+    }
+    .opt:hover { border-color: var(--ink-soft); }
+    .opt.checked {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .opt input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    textarea,
+    input[type=number].ans {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14.5px;
+      border-radius: var(--radius);
+      resize: vertical;
+      transition: border-color .2s;
+    }
+    textarea {
+      min-height: 96px;
+      line-height: 1.7;
+    }
+    input[type=number].ans {
+      width: 160px;
+      font-family: 'JetBrains Mono', monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    .short-answer textarea { min-height: 78px; }
+    .charcount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+      text-align: left;
+      direction: ltr;
+    }
+    .charcount.warn { color: var(--accent); font-weight: bold; }
+
+    .extra-field {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+    .extra-field label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+    .conf-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .conf-row label {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    select {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      border-radius: var(--radius);
+      outline: none;
+    }
+
+    .submit-zone {
+      margin-top: 40px;
+      padding: 28px;
+      background: var(--paper-2);
+      border-radius: var(--radius);
+      position: sticky;
+      bottom: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      z-index: 10;
+    }
+    .submit-zone h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .submit-zone p {
+      margin: 0 0 18px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .submit-zone.done {
+      display: none;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      padding: 13px 26px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: opacity .15s, transform .1s, background-color .2s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--ink-soft);
+      color: var(--ink);
+    }
+    .btn-ghost:hover { background: rgba(0,0,0,.05); }
+
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: pre-line;
+      transition: color .3s;
+    }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--accent); }
+    .status.info { color: var(--ink-soft); }
+    .status.warn { color: var(--warn); }
+    .missing-list {
+      margin-top: 12px;
+      font-size: 12.5px;
+      color: var(--accent);
+    }
+
+    .done-screen { display: none; }
+    .done-screen.show {
+      display: block;
+      animation: fadeIn .5s ease;
+    }
+    .done-screen h2 { font-size: 22px; }
+    .done-screen .lead { max-width: 56ch; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--ink-soft);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-
-<div class="shell">
-  <nav class="rail" id="rail">
-    <div class="rail-title">بخش‌ها</div>
-    <div id="railList"></div>
-    <div class="rail-progress">
-      پاسخ داده‌شده: <span id="progressCount">0</span> / <span id="progressTotal">0</span>
-      <div class="rail-bar"><div class="rail-bar-fill" id="progressFill"></div></div>
-    </div>
-  </nav>
-
-  <main>
-    <div class="top">
-      <div class="eyebrow">Cognitive & Analytical Assessment</div>
-      <h1>پرسشنامه تحلیلی-شناختی</h1>
-      <p class="lead">۱۱ سؤال، حدود ۲۰ تا ۳۰ دقیقه. خروجی یک پروفایل چندمحوره و غیررسمی (Heuristic) است، نه یک نمرهٔ بالینی یا قطعی علمی.</p>
-      <div class="instructions">
-        این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار و بازبینی باورها را می‌سنجد.
-        <ul>
-          <li>در سؤالات باز: اختصار و دقت تحلیلی بر طولانی‌نویسی ارجحیت دارد.</li>
-          <li>در سؤالات دارای «اطمینان»، سطح واقعی اطمینان خود را اعلام کنید.</li>
-          <li>اگر در هنگام پاسخگویی مکرراً از صفحه خارج شوید، سیستم آن را ردیابی کرده و در پروفایل شما ثبت خواهد کرد.</li>
-        </ul>
+  <div class="shell">
+    <nav class="rail" id="rail" aria-label="بخش‌های آزمون">
+      <div class="rail-title">بخش‌ها</div>
+      <div id="railList"></div>
+      <div class="rail-progress">
+        پاسخ داده‌شده: <span id="progressCount">0</span> / <span id="progressTotal">0</span>
+        <div class="rail-bar"><div class="rail-bar-fill" id="progressFill"></div></div>
       </div>
-      <div class="field-row" style="margin-top:24px;">
-        <div class="field">
-          <label>نام و نام‌خانوادگی *</label>
-          <input type="text" id="pName" required placeholder="مثال: علی حسینی">
+    </nav>
+
+    <main>
+      <div class="top">
+        <div class="eyebrow">Cognitive & Analytical Assessment</div>
+        <h1>ارزیابی شناختی و تحلیلی</h1>
+        <p class="lead">
+          ۱۱ سؤال، حدود ۲۰ تا ۳۰ دقیقه. این ابزار برای غربالگری اولیهٔ توان استدلال، تحلیل، یادگیری و بازبینی مدل‌های ذهنی طراحی شده و یک آزمون استاندارد بالینی یا سنجش قطعی هوش نیست.
+        </p>
+
+        <div class="instructions">
+          <strong>راهنمای پاسخ‌گویی</strong>
+          <ul>
+            <li>در سؤالات تشریحی، به‌جای طولانی‌نویسی، استدلال کامل و روشن ارائه کنید.</li>
+            <li>در سؤالات دارای سطح اطمینان، احتمال واقعی خود را صادقانه برآورد کنید؛ اطمینان بالا به‌خودی‌خود امتیاز مثبت نیست.</li>
+            <li>در بعضی آیتم‌ها امکان ثبت داده‌های فنی مانند زمان پاسخ و رخدادهای تغییر وضعیت صفحه وجود دارد؛ این داده‌ها به‌عنوان اطلاعات فرایندی ثبت می‌شوند و به‌تنهایی نشانهٔ تقلب یا توان شناختی نیستند.</li>
+          </ul>
         </div>
+
+        <div class="consent-box">
+          <div class="consent-title">اطلاع‌رسانی دربارهٔ داده‌ها</div>
+          <div>
+            پاسخ‌های شما برای ارزیابی این آزمون پردازش می‌شوند. پاسخ‌های تشریحی ممکن است با کمک یک مدل زبانی برای امتیازدهی مبتنی بر rubric تحلیل شوند. داده‌های آزمون و برخی متادیتای فرایندی نیز ممکن است برای بررسی داخلی و کنترل کیفیت به سیستم مرکزی ارسال شوند.
+          </div>
+          <label class="consent-check">
+            <input type="checkbox" id="consent" required>
+            <span>این توضیحات را خوانده‌ام و با پردازش داده‌های آزمون برای همین هدف موافقم.</span>
+          </label>
+        </div>
+
+        <div class="field-row" style="margin-top:24px;">
+          <div class="field">
+            <label for="pName">نام و نام‌خانوادگی *</label>
+            <input type="text" id="pName" required autocomplete="name" placeholder="مثال: علی حسینی">
+          </div>
+          <div class="field">
+            <label for="pAge">سن * (حداقل ۱۶ سال)</label>
+            <input type="number" id="pAge" required min="16" max="100" inputmode="numeric" placeholder="مثال: 25">
+          </div>
+        </div>
+
         <div class="field">
-          <label>سن * (حداقل ۱۶ سال)</label>
-          <input type="number" id="pAge" required min="16" max="100" placeholder="مثال: 25">
+          <label for="pContact">راه ارتباطی (اختیاری)</label>
+          <input type="text" id="pContact" autocomplete="email" placeholder="ایمیل یا شماره تماس جهت پیگیری بعدی...">
         </div>
       </div>
-      <div class="field">
-        <label>راه ارتباطی (اختیاری)</label>
-        <input type="text" id="pContact" placeholder="ایمیل یا شماره تماس جهت پیگیری بعدی...">
+
+      <div id="formRoot"></div>
+
+      <div class="submit-zone" id="submitZone">
+        <h3>ارسال پاسخ‌ها</h3>
+        <p>نام، سن، رضایت و تمام پاسخ‌های الزامی باید تکمیل شده باشند.</p>
+        <button class="btn btn-primary" id="submitBtn" type="button">ثبت و پردازش پاسخ‌ها</button>
+        <div class="status" id="statusMsg" aria-live="polite"></div>
+        <div class="missing-list" id="missingList"></div>
       </div>
-    </div>
 
-    <div id="formRoot"></div>
-
-    <div class="submit-zone" id="submitZone">
-      <h3>ارسال پاسخ‌ها</h3>
-      <p>پیش از ارسال، فیلدهای الزامی (نام، سن، و تمام سؤالات) باید تکمیل شده باشند.</p>
-      <button class="btn btn-primary" id="submitBtn">ثبت و پردازش پاسخ‌ها</button>
-      <div class="status" id="statusMsg"></div>
-      <div class="missing-list" id="missingList"></div>
-    </div>
-
-    <div class="done-screen" id="doneScreen">
-      <h2>سپاسگزاریم — آزمون با موفقیت ثبت شد</h2>
-      <p class="lead">گزارش و پروفایل شناختی شما آماده است.</p>
-      <div class="btn-row">
-        <button class="btn btn-ghost" id="downloadBtn">دانلود گزارش (TXT)</button>
-        <button class="btn btn-ghost" id="copyBtn">کپی کردن در کلیپ‌بورد</button>
+      <div class="done-screen" id="doneScreen">
+        <h2>پاسخ‌ها با موفقیت ثبت شد</h2>
+        <p class="lead">
+          پاسخ‌های شما دریافت و برای ارزیابی پردازش شدند. نتیجهٔ داخلی این غربالگری برای تیم ارزیابی ثبت می‌شود و این صفحه نمره یا تصمیم نهایی را نمایش نمی‌دهد.
+        </p>
       </div>
-      <div class="report-box" id="reportBox"></div>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 
-<script>
-// آدرس Web App مربوط به Google Apps Script خود را در اینجا قرار دهید
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx1GTvCXRQlRhB1Nd3Iv6QR4Al-1GH1RANoWySF_RdZz-KB-XqqrO1FPp4jSAq_4IHdug/exec";
+  <script>
+    // =====================================================================
+    // Frontend configuration
+    // =====================================================================
+    const ASSESSMENT_VERSION = "1.1";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYIlHoRnhYTXgqi_-4pBQhsp-bITRcW9dUVzv4KlyDnRAvxya74-eWGlhEkvCgP1Cv/exec";
 
-let sessionToken = null;
-const answers = {};
-const sectionFirstSeen = {};
-const itemFirstAnswered = {};
+    let sessionToken = null;
+    let submissionStarted = false;
+    let tabBlurCount = 0;
+    let totalBlurTimeSec = 0;
+    let lastBlurTime = 0;
 
-// متغیرهای ردیابی تمرکز کاربر
-let tabBlurCount = 0;
-let totalBlurTimeSec = 0;
-let lastBlurTime = 0;
+    const answers = Object.create(null);
+    const sectionFirstSeen = Object.create(null);
+    const itemShownAt = Object.create(null);
+    const itemFirstAnswered = Object.create(null);
 
-const SECTIONS = [
-  {code:"A", title:"استدلال سیستمی و علّی", weight:"۲۵٪", desc:"سنجش توانایی تفکیک علت از معلول و تحلیل سیستم‌های پیچیده"},
-  {code:"B", title:"تفکر نقاد و ارزیابی شواهد", weight:"۲۰٪", desc:"سنجش تشخیص سوگیری، تحلیل داده‌ها و ارزیابی فرضیه‌ها"},
-  {code:"C", title:"یادگیری سریع و انتقال ساختار", weight:"۳۰٪ · مهم‌ترین بخش", desc:"سنجش کشف قوانین پنهان و تعمیم الگوها بدون دانش قبلی"},
-  {code:"D", title:"انعطاف شناختی و بازبینی مدل", weight:"۱۵٪", desc:"سنجش تواضع فکری، تغییر باور بر اساس شواهد و خلاقیت"},
-  {code:"E", title:"ارزیابی شواهد و عدم‌قطعیت", weight:"۱۰٪", desc:"سنجش قضاوت در شرایط اطلاعات ناقص و تخصیص وزن به شواهد"}
-];
+    // =====================================================================
+    // Assessment blueprint
+    // =====================================================================
+    const SECTIONS = [
+      {
+        code: "A",
+        title: "استدلال سیستمی و علّی",
+        weight: "۲۵٪",
+        desc: "تفکیک علت از معلول، ساخت مدل جایگزین و طراحی آزمون‌های تمایزبخش"
+      },
+      {
+        code: "B",
+        title: "تفکر نقاد و ارزیابی شواهد",
+        weight: "۲۰٪",
+        desc: "شناسایی توضیح‌های رقیب، تشخیص نرخ پایه و ارزیابی استدلال‌ها"
+      },
+      {
+        code: "C",
+        title: "یادگیری و انتقال ساختار",
+        weight: "۲۵٪",
+        desc: "کشف قانون پنهان، انتقال آن به موارد جدید و تلاش برای ابطال مدل"
+      },
+      {
+        code: "D",
+        title: "انعطاف شناختی و بازبینی مدل",
+        weight: "۲۰٪",
+        desc: "توانایی بازنگری در باورها و برخورد سازنده با شواهد ناسازگار"
+      },
+      {
+        code: "E",
+        title: "استدلال احتمالی و عدم‌قطعیت",
+        weight: "۱۰٪",
+        desc: "به‌روزرسانی باورها بر اساس شواهد و وزن‌دهی به قابلیت اتکای منابع"
+      }
+    ];
 
-const ITEMS = [
-  {
-    id: "q1", section: "A", type: "open", wordLimit: 150, idealMinWords: 15,
-    text: "یک جعبه‌سیاه یا دستگاه مکانیکی ناشناخته را بررسی می‌کنید:\nفرایند ورودی اجرا می‌شود → مکث دقیقاً ۲ ثانیه‌ای → تلاش برای ارسال یک سیگنال به محیط → ادامه فرایند.\nوقتی گیرنده سیگنال در محیط کاملاً مسدود و قطع است، آن مکث ۲ ثانیه‌ای همچنان با همان دقت رخ می‌دهد.\nالف) این مشاهده کدام فرضیه را تضعیف می‌کند؟\nب) کدام توضیح جایگزین را تقویت می‌کند؟\nج) اگر فقط مجاز به انجام یک آزمایش دیگر باشید، چه چیزی را تغییر می‌دهید و چرا؟"
-  },
-  {
-    id: "q2", section: "A", type: "mcq", hasConf: true,
-    extra: { id: "q2_explain", label: "دلیل تحلیل خود را در یک جمله بنویسید (اختیاری):", wordLimit: 40, required: false, idealMinWords: 4 },
-    text: "در یک اکوسیستم یا سیستم پیچیده، با افزایش متغیر X معمولاً Y افزایش می‌یابد. اما در برخی شرایط X زیاد می‌شود ولی Y ثابت می‌ماند؛ گاهی Y تغییر می‌کند بدون آن‌که X تغییر کرده باشد؛ و با تغییر متغیر سوم (Z)، کلاً رابطه X و Y معکوس می‌شود. کدام تفسیر از نظر منطق سیستمی درست‌تر است؟",
-    options: [
-      "متغیر X علت مستقیم Y است و بقیه حالات صرفاً نویز آزمایشگاهی هستند.",
-      "رابطه X و Y غیرعلّی یا غیرمستقیم است و تحت کنترل یک شبکه تعادلی یا متغیر واسط مثل Z قرار دارد.",
-      "رابطه‌ی X و Y احتمالاً غیرمستقیم است، اما بدون داده‌ی بیشتر هیچ فرضیه‌ای دربارهٔ مکانیسم قابل طرح نیست و باید کاملاً از تحلیل بیشتر صرف‌نظر کرد.",
-      "متغیر Z نشان‌دهنده اشتباه بودن کل داده‌های جمع‌آوری‌شده است."
-    ]
-  },
-  {
-    id: "q3", section: "B", type: "open", wordLimit: 150, idealMinWords: 15,
-    text: "آمارها نشان می‌دهد در سازمان‌هایی که دوره‌های آموزشی «مدیریت استرس و بهداشت روان» بیشتری برگزار می‌شود، نرخ مرخصی‌های استعلاجی و فرسودگی شغلی (Burnout) کارمندان نیز بالاتر است. یک مدیر نتیجه می‌گیرد: «این دوره‌ها نتیجه عکس دارند و باعث فرسودگی بیشتر می‌شوند».\nحداقل دو توضیح جایگزین (متغیر پنهان یا میانجی) برای این همبستگی ارائه کنید و بگویید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است؟"
-  },
-  {
-    id: "q4", section: "B", type: "mcq", hasConf: true,
-    text: "یک روش سنتی محلی برای شناسایی زودهنگام یک بیماری بسیار نادر در گیاهان به کار می‌رود (شیوع واقعی: ۱ در ۱۰۰۰ بوته). این روش ۹۹٪ بوته‌های واقعاً بیمار را درست شناسایی می‌کند، و تنها ۱٪ از بوته‌های سالم را به‌اشتباه بیمار اعلام می‌کند. اگر روی یک بوتهٔ خاص هشدار داده شود، کدام گزاره منطقی‌تر است؟",
-    options: [
-      "به احتمال ۹۹٪ بوته دارای بیماری است.",
-      "احتمال واقعی وجود بیماری در این بوته همچنان زیر ۱۰٪ است، زیرا نرخ پایه این بیماری در کل محصولات بسیار پایین است.",
-      "نتیجه تست هیچ اطلاعاتی به ما نمی‌دهد و کاملاً تصادفی است.",
-      "به دلیل دقت ۹۹ درصدی روش، احتمال خطا تنها در صورت اشتباه انسانی در اجرای روش وجود دارد."
-    ]
-  },
-  {
-    id: "qC_data", section: "C", type: "info",
-    text: "یک سیستم منطقی ناشناخته بر اساس ورود سه عدد (A, B, C) یک خروجی عددی تولید می‌کند. ورودی‌ها و خروجی‌های زیر ثبت شده‌اند:\nهدف: کشف قانون پنهان سیستم و اعمال آن روی ورودی‌های جدید.",
-    data: "(2, 5, 4) → 5      (2, 5, 5) → 6\n(5, 2, 4) → 6      (5, 2, 5) → 7\n(3, 3, 4) → 4      (3, 3, 5) → 5"
-  },
-  { id: "q5", section: "C", type: "number", text: "(4, 9, 6) → ؟" },
-  { id: "q7", section: "C", type: "number", text: "(7, 7, 9) → ؟" },
-  { id: "q8", section: "C", type: "open", wordLimit: 40, idealMinWords: 3, text: "قانون حاکم بر این سیستم را در یک جمله شفاف و بدون ابهام توضیح دهید." },
-  {
-    id: "q9", section: "D", type: "open", wordLimit: 180, idealMinWords: 20,
-    text: "یک باور یا فرض بنیادی درباره انسان، هنر، جامعه، یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.\nبنویسید: ۱) مدل قبلی‌تان چه پیش‌بینی مشخصی می‌داد که در عمل نادرست از آب درآمد؟ ۲) آن شاهد نقض دقیقاً چه بود (نه احساس کلی، بلکه یک رخداد یا مشاهدهٔ مشخص)؟ ۳) در استدلال قبلی‌تان دقیقاً چه نکته‌ای نادیده گرفته شده بود که باعث آن اشتباه شد؟"
-  },
-  {
-    id: "q10", section: "D", type: "mcq", hasConf: true,
-    text: "سه نظریه رقیب برای یک پدیده وجود دارد: الف (۶۰٪ احتمال اولیه)، ب (۳۰٪ احتمال اولیه)، ج (۱۰٪ احتمال اولیه). شواهد جدیدی کشف می‌شود که احتمال وقوع آن‌ها تحت نظریه الف ۱.۵ برابر حالت عادی، اما تحت نظریه ب ۳ برابر حالت عادی است. منطقی‌ترین واکنش چیست؟",
-    options: [
-      "نظریه الف همچنان محتمل‌ترین گزینه باقی می‌ماند، زیرا برتری اولیه‌ی ۲ بر ۱ آن با شواهد جدید خنثی نمی‌شود.",
-      "نظریه ب محتمل‌ترین گزینه می‌شود، زیرا نرخ رشد شواهد پشتیبان آن (۳ برابر) دو برابر نرخ رشد شواهد نظریه الف است.",
-      "احتمال صحت نظریه الف و ب اکنون برابر می‌شود و باید بررسی بیشتری کرد.",
-      "احتمال نظریه ب دو برابر نظریه الف می‌شود، زیرا وزن شواهد جدید دو برابر شانس اولیه الف را جبران می‌کند."
-    ]
-  },
-  {
-    id: "q11", section: "E", type: "mcq", hasConf: true,
-    extra: { id: "q11_explain", label: "ملاک وزن‌دهی شما به شواهد چه بود؟ (اختیاری)", wordLimit: 50, required: false, idealMinWords: 4 },
-    text: "درباره زمان وقوع یک حادثه، سه شاهد داریم:\nشاهد ۱ (نزدیک به صحنه، با سابقه خطای دید): حادثه قبل از زنگ ساعت رخ داد.\nشاهد ۲ (دورتر، با دقت بالای تاریخی): حادثه بعد از زنگ ساعت رخ داد.\nشاهد ۳ (فقط صدا را شنیده): صدای زنگ ساعت دقیقاً رأس ساعت ۱۲ بود.\nکدام رویکرد تحلیلی قوی‌تر است؟",
-    options: [
-      "گفته شاهد ۱ معتبرتر است چون مجاورت فیزیکی همیشه اولویت دارد.",
-      "گفته شاهد ۲ معتبرتر است چون سابقه دقت و قابلیت اتکای بالاتری دارد.",
-      "بدون داشتن اطلاعات دقیق‌تر از زمینه، هرگونه قضاوت بی‌اساس است و باید از هرگونه نتیجه‌گیری کاملاً اجتناب کرد.",
-      "شاهد ۳ به دلیل مستقل بودن از سوگیری دیداری، می‌تواند به‌طور مشروط ادعای شاهد ۲ را وزن‌دهی و تقویت کند، هرچند نتیجه قطعی نیست."
-    ]
-  },
-  {
-    id: "q12", section: "E", type: "mcq", hasConf: true,
-    text: "می‌دانیم: عنصر A با B مرتبط است، B با C مرتبط است، اما A و C هیچ رابطه‌ی قابل‌مشاهده‌ای با هم ندارند. متغیر D هم با A و هم با C ارتباط مستقیم دارد. آیا می‌توان نتیجه گرفت که «D علت مشترک A و C است»؟",
-    options: [
-      "نمی‌توان قطعی گفت؛ اگر D علت مشترک بود معمولاً A و C باید همبستگی نشان می‌دادند، مگر آنکه اثرات مسیرهای دیگر (مثل B) همدیگر را خنثی کرده باشند (اثر سرکوب).",
-      "احتمالاً خیر، اما در سیستم‌های پیچیده نمی‌توان با قطعیت درباره عدم وجود یک رابطه نامرئی نظر داد.",
-      "بله؛ چون D تنها متغیری است که مستقیماً با هر دو در ارتباط است.",
-      "بله؛ عدم همبستگی مستقیم A و C نشان‌دهنده یک متغیر پنهان قوی مانند D است."
-    ]
-  }
-];
+    const ITEMS = [
+      {
+        id: "q1",
+        number: 1,
+        section: "A",
+        type: "open",
+        wordLimit: 150,
+        idealMinWords: 15,
+        text: `یک جعبه‌سیاه یا دستگاه مکانیکی ناشناخته را بررسی می‌کنید:
+فرایند ورودی اجرا می‌شود → مکث دقیقاً ۲ ثانیه‌ای → تلاش برای ارسال یک سیگنال به محیط → ادامه فرایند.
+وقتی گیرندهٔ سیگنال در محیط کاملاً مسدود و قطع است، آن مکث ۲ ثانیه‌ای همچنان با همان دقت رخ می‌دهد.
 
-function shuffleOptions(optionsArray) {
-  let arr = optionsArray.map((val, idx) => ({ val, idx }));
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+الف) این مشاهده کدام فرضیه را تضعیف می‌کند؟
+ب) کدام توضیح جایگزین را تقویت می‌کند؟
+ج) اگر فقط مجاز به انجام یک آزمایش دیگر باشید، چه چیزی را تغییر می‌دهید و چرا؟`
+      },
+      {
+        id: "q2",
+        number: 2,
+        section: "A",
+        type: "mcq",
+        hasConf: true,
+        extra: {
+          id: "q2_explain",
+          label: "دلیل انتخاب خود را در یک جملهٔ دقیق بنویسید. *",
+          wordLimit: 40,
+          required: true,
+          idealMinWords: 4
+        },
+        text: `در یک سیستم پیچیده، با افزایش متغیر X معمولاً Y افزایش می‌یابد. اما در برخی شرایط X افزایش می‌یابد و Y تقریباً ثابت می‌ماند؛ گاهی Y تغییر می‌کند بدون آن‌که X تغییر کند؛ و با تغییر متغیر سوم Z، حتی جهت رابطهٔ مشاهده‌شده میان X و Y عوض می‌شود.
+کدام تفسیر از نظر منطق سیستمی مناسب‌تر است؟`,
+        options: [
+          "X علت مستقیم Y است و بقیهٔ حالت‌ها را می‌توان عمدتاً نویز دانست.",
+          "رابطهٔ X و Y احتمالاً ساده و مستقیم نیست و ممکن است به متغیرهای میانجی، تعدیل‌گر یا شرایط سیستم وابسته باشد؛ برای تفکیک مکانیسم‌ها به شواهد بیشتری نیاز است.",
+          "بدون دادهٔ کامل‌تر هیچ توضیح یا فرضیه‌ای مجاز نیست و باید هرگونه تحلیل بیشتر متوقف شود.",
+          "وجود Z نشان می‌دهد داده‌های مربوط به X و Y اساساً نامعتبرند."
+        ]
+      },
+      {
+        id: "q3",
+        number: 3,
+        section: "B",
+        type: "open",
+        wordLimit: 150,
+        idealMinWords: 15,
+        text: `آمارها نشان می‌دهد در سازمان‌هایی که دوره‌های آموزشی «مدیریت استرس و بهداشت روان» بیشتری برگزار می‌شود، نرخ مرخصی‌های استعلاجی و فرسودگی شغلی (Burnout) کارکنان نیز بالاتر است. یک مدیر نتیجه می‌گیرد: «این دوره‌ها نتیجهٔ عکس دارند و باعث فرسودگی بیشتر می‌شوند».
 
-function wordCount(text) { if(!text) return 0; return text.trim().split(/\s+/).filter(Boolean).length; }
-function qNumber(id) { let n=0; for(const it of ITEMS){ if(it.type!=="info") n++; if(it.id===id) return n; } return ""; }
+حداقل دو توضیح جایگزین برای این همبستگی ارائه کنید و توضیح دهید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است.`
+      },
+      {
+        id: "q4",
+        number: 4,
+        section: "B",
+        type: "mcq",
+        hasConf: true,
+        text: `یک روش تشخیصی برای شناسایی زودهنگام یک بیماری بسیار نادر در گیاهان به کار می‌رود. شیوع واقعی بیماری ۱ در ۱۰۰۰ بوته است. روش، ۹۹٪ بوته‌های واقعاً بیمار را درست شناسایی می‌کند و در ۱٪ بوته‌های سالم هشدار مثبت کاذب می‌دهد.
+اگر روی یک بوتهٔ خاص هشدار مثبت دریافت شود، کدام گزاره منطقی‌تر است؟`,
+        options: [
+          "به احتمال ۹۹٪ بوته دارای بیماری است.",
+          "احتمال واقعی بیماری همچنان زیر ۱۰٪ است، چون نرخ پایهٔ بیماری بسیار پایین است.",
+          "نتیجهٔ تست هیچ اطلاعاتی نمی‌دهد و عملاً تصادفی است.",
+          "به دلیل دقت ۹۹٪، احتمال خطا فقط در صورت اشتباه انسانی وجود دارد."
+        ]
+      },
+      {
+        id: "qC_data",
+        section: "C",
+        type: "info",
+        text: "یک سیستم منطقی ناشناخته بر اساس ورود سه عدد (A, B, C) یک خروجی عددی تولید می‌کند. هدف: کشف قانون پنهان سیستم و اعمال آن روی ورودی‌های جدید.",
+        data: `(2, 5, 4) → 5      (2, 5, 5) → 6
+(5, 2, 4) → 6      (5, 2, 5) → 7
+(3, 3, 4) → 4      (3, 3, 5) → 5`
+      },
+      {
+        id: "q5",
+        number: 5,
+        section: "C",
+        type: "number",
+        hasConf: true,
+        text: "با همان قانون، خروجی زیر چیست؟",
+        data: "(4, 9, 6) → ؟"
+      },
+      {
+        id: "q6",
+        number: 6,
+        section: "C",
+        type: "number",
+        hasConf: true,
+        text: "یک مورد جدید با جهت رابطهٔ متفاوت را حل کنید:",
+        data: "(9, 4, 6) → ؟"
+      },
+      {
+        id: "q7",
+        number: 7,
+        section: "C",
+        type: "open",
+        wordLimit: 80,
+        idealMinWords: 8,
+        text: `قانون حاکم بر سیستم را در یک جملهٔ شفاف و بدون ابهام توضیح دهید.
+سپس یک ورودی جدید پیشنهاد کنید که بتواند قانون شما را از دست‌کم یک قانون رقیب متمایز کند.`,
+        hint: "اول قانون را بیان کنید؛ سپس دقیقاً بگویید چرا ورودی پیشنهادی برای تمایز میان دو قانون مفید است."
+      },
+      {
+        id: "q8",
+        number: 8,
+        section: "D",
+        type: "open",
+        wordLimit: 180,
+        idealMinWords: 20,
+        text: `یک باور یا فرض بنیادی دربارهٔ انسان، هنر، جامعه یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.
 
-function renderExtra(extra) {
-  if(!extra) return "";
-  return `<div class="extra-field">
-    <label>${extra.label}</label>
-    <textarea data-id="${extra.id}" placeholder="پاسخ (دقت و اختصار ارجحیت دارد)..."></textarea>
-    ${extra.wordLimit ? `<div class="charcount mono" id="${extra.id}_cc">۰ / ${extra.wordLimit} کلمه</div>` : ""}
-  </div>`;
-}
+بنویسید:
+۱) مدل قبلی شما چه پیش‌بینی مشخصی می‌داد که در عمل نادرست از آب درآمد؟
+۲) شاهد نقض دقیقاً چه بود (نه احساس کلی، بلکه یک رخداد یا مشاهدهٔ مشخص)؟
+۳) در استدلال قبلی‌تان دقیقاً چه نکته، فرض پنهان یا متغیری نادیده گرفته شده بود که باعث آن اشتباه شد؟`
+      },
+      {
+        id: "q9",
+        number: 9,
+        section: "E",
+        type: "mcq",
+        hasConf: true,
+        text: `سه نظریهٔ رقیب برای یک پدیده وجود دارد: نظریهٔ A با احتمال اولیهٔ ۶۰٪، نظریهٔ B با احتمال اولیهٔ ۳۰٪ و نظریهٔ C با احتمال اولیهٔ ۱۰٪.
+شواهد جدیدی پیدا می‌شود که احتمال وقوع مشاهدهٔ جدید را تحت A برابر ۱٫۵ برابر حالت عادی و تحت B برابر ۳ برابر حالت عادی می‌کند.
+منطقی‌ترین واکنش چیست؟`,
+        options: [
+          "نظریهٔ A همچنان محتمل‌ترین گزینه است، چون برتری اولیهٔ آن ۲ به ۱ بوده است.",
+          "نظریهٔ B محتمل‌ترین گزینه می‌شود، چون ضریب پشتیبانی آن دو برابر A است.",
+          "احتمال نظریهٔ A و B پس از این شواهد برابر می‌شود و هر دو باید بیش از پیش بررسی شوند.",
+          "احتمال B دو برابر A می‌شود، چون ضریب شواهد آن دو برابر ضریب A است."
+        ]
+      },
+      {
+        id: "q10",
+        number: 10,
+        section: "E",
+        type: "mcq",
+        hasConf: true,
+        extra: {
+          id: "q10_explain",
+          label: "ملاک اصلی وزن‌دهی شما به شواهد چه بود؟ (اختیاری)",
+          wordLimit: 50,
+          required: false,
+          idealMinWords: 4
+        },
+        text: `دربارهٔ این‌که یک حادثه قبل یا بعد از ساعت ۱۲ رخ داده، سه منبع داریم:
+منبع ۱: شاهد مستقیم و نزدیک به صحنه، اما با سابقهٔ خطای زمانی؛ می‌گوید حادثه قبل از ۱۲ رخ داده.
+منبع ۲: شاهد دورتر، اما با سابقهٔ دقت زمانی بالاتر؛ می‌گوید حادثه بعد از ۱۲ رخ داده.
+منبع ۳: یک ثبت مستقل و دارای ساعت همگام‌سازی‌شده که می‌گوید رویداد مرجع در ساعت ۱۲ رخ داده است و می‌تواند برای بررسی ترتیب زمانی استفاده شود.
+کدام رویکرد تحلیلی قوی‌تر است؟`,
+        options: [
+          "به دلیل مجاورت فیزیکی، گفتهٔ منبع ۱ همیشه باید بر دو منبع دیگر مقدم باشد.",
+          "صرفاً منبع ۲ را بپذیریم، چون سابقهٔ دقت بالاتری دارد و بررسی بیشتر لازم نیست.",
+          "چون منابع با هم تعارض دارند، هیچ نتیجه‌ای حتی به‌صورت احتمالی قابل دفاع نیست.",
+          "قابلیت اتکا، ارتباط با ادعا و استقلال شواهد را جداگانه وزن کنیم؛ منبع ۲ و ثبت مستقل می‌توانند در کنار هم شواهد قوی‌تری برای ترتیب زمانی بسازند، بدون آن‌که نتیجه را قطعی تلقی کنیم."
+        ]
+      },
+      {
+        id: "q11",
+        number: 11,
+        section: "D",
+        type: "open",
+        wordLimit: 150,
+        idealMinWords: 15,
+        text: `فرض کنید در یک بحث تحلیلی، فردی که از نظر شما توانمند و مستدل است، مدلی ارائه می‌کند که با بخش مهمی از مدل شما تعارض دارد و برای آن شواهدی نیز ارائه می‌دهد.
 
-const formRoot = document.getElementById("formRoot");
-const railList = document.getElementById("railList");
+توضیح دهید:
+۱) نخست چه چیزی را در استدلال او بررسی می‌کنید؟
+۲) چه بخشی از مدل خود را موقتاً زیر سؤال می‌برید یا معلق می‌کنید؟
+۳) چه نوع شواهدی می‌تواند باعث شود موضع خود را واقعاً تغییر دهید؟`
+      }
+    ];
 
-SECTIONS.forEach(sec => {
-  const block = document.createElement("section");
-  block.className = "block";
-  block.id = "sec-" + sec.code;
-  block.innerHTML = `<div class="block-head">
-      <span class="block-code">بخش ${sec.code}</span>
-      <span class="block-title">${sec.title}</span>
-      <span class="block-weight">${sec.weight}</span>
-    </div>
-    <div class="block-desc">${sec.desc}</div>`;
+    // =====================================================================
+    // Utilities
+    // =====================================================================
+    function wordCount(text) {
+      if (!text) return 0;
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
 
-  ITEMS.filter(it => it.section === sec.code).forEach(it => {
-    const q = document.createElement("div");
-    q.className = "q";
-    let inner = "";
-    if(it.type !== "info") inner += `<div class="q-num mono">سؤال ${qNumber(it.id)}</div>`;
-    inner += `<div class="q-text">${it.text}</div>`;
-    if(it.data) inner += `<div class="data-block">${it.data}</div>`;
+    function normalizeAnswerValue(value) {
+      return value === undefined || value === null ? "" : String(value).trim();
+    }
 
-    if(it.type === "mcq") {
-      inner += `<div class="options" data-id="${it.id}">`;
-      const shuffled = shuffleOptions(it.options);
-      shuffled.forEach(optObj => {
-        inner += `<label class="opt" data-original-idx="${optObj.idx}">
-          <input type="radio" name="${it.id}" value="${optObj.idx}">
-          <span>${optObj.val}</span>
-        </label>`;
-      });
-      inner += `</div>`;
-      if(it.hasConf) {
-        inner += `<div class="conf-row">
-          <label>سطح اطمینان از پاسخ:</label>
-          <select data-id="${it.id}_conf">
+    function wordLimitOf(id) {
+      for (const item of ITEMS) {
+        if (item.id === id && item.wordLimit) return item.wordLimit;
+        if (item.extra && item.extra.id === id && item.extra.wordLimit) return item.extra.wordLimit;
+      }
+      return null;
+    }
+
+    function requiredIds() {
+      const ids = [];
+      for (const item of ITEMS) {
+        if (item.type === "info") continue;
+        ids.push(item.id);
+        if (item.extra && item.extra.required) ids.push(item.extra.id);
+        if (item.hasConf) ids.push(`${item.id}_conf`);
+      }
+      return ids;
+    }
+
+    function setStatus(message, kind = "info") {
+      const box = document.getElementById("statusMsg");
+      box.className = `status ${kind}`;
+      box.innerHTML = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // =====================================================================
+    // Rendering
+    // =====================================================================
+    const formRoot = document.getElementById("formRoot");
+    const railList = document.getElementById("railList");
+
+    function renderExtra(extra, itemId) {
+      return `
+        <div class="extra-field">
+          <label for="${extra.id}">${escapeHtml(extra.label)}</label>
+          <textarea id="${extra.id}" data-id="${extra.id}" data-parent-id="${itemId}" placeholder="پاسخ کوتاه و دقیق..."></textarea>
+          ${extra.wordLimit ? `<div class="charcount" id="${extra.id}_cc">۰ / ${extra.wordLimit} کلمه</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderConfidence(item) {
+      if (!item.hasConf) return "";
+      return `
+        <div class="conf-row">
+          <label for="${item.id}_conf">سطح اطمینان از پاسخ:</label>
+          <select id="${item.id}_conf" data-id="${item.id}_conf">
             <option value="">— انتخاب کنید —</option>
             <option value="1">۱ (کمتر از ۵۰٪)</option>
             <option value="2">۲ (۵۰–۶۹٪)</option>
@@ -333,255 +837,389 @@ SECTIONS.forEach(sec => {
             <option value="4">۴ (۸۵–۹۴٪)</option>
             <option value="5">۵ (۹۵٪ یا بیشتر)</option>
           </select>
-        </div>`;
+        </div>
+      `;
+    }
+
+    function renderItem(item) {
+      if (item.type === "info") {
+        return `
+          <div class="q" data-item-id="${item.id}">
+            <div class="q-text">${escapeHtml(item.text)}</div>
+            ${item.data ? `<div class="data-block">${escapeHtml(item.data)}</div>` : ""}
+          </div>
+        `;
       }
-      inner += renderExtra(it.extra);
-    } else if(it.type === "open") {
-      inner += `<textarea data-id="${it.id}" placeholder="پاسخ خود را بنویسید (دقت و اختصار ارجحیت دارد)..."></textarea>`;
-      if(it.wordLimit) inner += `<div class="charcount mono" id="${it.id}_cc">۰ / ${it.wordLimit} کلمه</div>`;
-    } else if(it.type === "number") {
-      inner += `<input type="number" class="ans" data-id="${it.id}" placeholder="مثلاً: 5">`;
-    }
-    q.innerHTML = inner;
-    block.appendChild(q);
-  });
-  formRoot.appendChild(block);
 
-  const railItem = document.createElement("div");
-  railItem.className = "rail-item";
-  railItem.dataset.target = "sec-" + sec.code;
-  railItem.innerHTML = `<span class="code mono">${sec.code}</span><span>${sec.title}</span>`;
-  railItem.addEventListener("click", () => { document.getElementById("sec-"+sec.code).scrollIntoView({behavior:"smooth",block:"start"}); });
-  railList.appendChild(railItem);
-});
+      let inner = `<div class="q" data-item-id="${item.id}" id="item-${item.id}">`;
+      inner += `<div class="q-num mono">سؤال ${item.number}</div>`;
+      inner += `<div class="q-text">${escapeHtml(item.text)}</div>`;
 
-function wordLimitOf(id) {
-  for(const it of ITEMS) {
-    if(it.id === id && it.wordLimit) return it.wordLimit;
-    if(it.extra && it.extra.id === id && it.extra.wordLimit) return it.extra.wordLimit;
-  } return null;
-}
+      if (item.data) inner += `<div class="data-block">${escapeHtml(item.data)}</div>`;
+      if (item.hint) inner += `<div class="answer-hint">${escapeHtml(item.hint)}</div>`;
 
-formRoot.addEventListener("change", e => {
-  const t = e.target;
-  if(t.type === "radio") {
-    answers[t.name] = parseInt(t.value); 
-    if(!itemFirstAnswered[t.name]) itemFirstAnswered[t.name] = Date.now();
-    const wrap = t.closest(".options");
-    wrap.querySelectorAll(".opt").forEach(o => o.classList.remove("checked"));
-    t.closest(".opt").classList.add("checked");
-    updateProgress();
-  }
-  if(t.tagName === "SELECT") {
-    answers[t.dataset.id] = t.value;
-    if(!itemFirstAnswered[t.dataset.id]) itemFirstAnswered[t.dataset.id] = Date.now();
-    updateProgress();
-  }
-});
-
-formRoot.addEventListener("input", e => {
-  const t = e.target;
-  if(t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && t.type === "number")) {
-    answers[t.dataset.id] = t.value;
-    if(!itemFirstAnswered[t.dataset.id]) itemFirstAnswered[t.dataset.id] = Date.now();
-    
-    if(t.tagName === "TEXTAREA") {
-      const cc = document.getElementById(t.dataset.id + "_cc");
-      if(cc) {
-        const wl = wordLimitOf(t.dataset.id);
-        const wc = wordCount(t.value);
-        cc.textContent = `${wc.toLocaleString("fa-IR")} / ${wl} کلمه`;
-        cc.parentElement.classList.toggle("warn", wl && wc > wl);
+      if (item.type === "mcq") {
+        const randomized = item.options.map((value, index) => ({ value, index }));
+        for (let i = randomized.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [randomized[i], randomized[j]] = [randomized[j], randomized[i]];
+        }
+        inner += `<div class="options" data-id="${item.id}">`;
+        for (const opt of randomized) {
+          inner += `
+            <label class="opt" data-original-idx="${opt.index}">
+              <input type="radio" name="${item.id}" value="${opt.index}">
+              <span>${escapeHtml(opt.value)}</span>
+            </label>
+          `;
+        }
+        inner += `</div>`;
+        inner += renderConfidence(item);
+        if (item.extra) inner += renderExtra(item.extra, item.id);
+      } else if (item.type === "open") {
+        inner += `<textarea data-id="${item.id}" placeholder="پاسخ خود را با دقت و بدون حاشیه بنویسید..."></textarea>`;
+        if (item.wordLimit) inner += `<div class="charcount" id="${item.id}_cc">۰ / ${item.wordLimit} کلمه</div>`;
+      } else if (item.type === "number") {
+        inner += `<input type="number" class="ans" data-id="${item.id}" inputmode="numeric" autocomplete="off" placeholder="مثلاً: 7">`;
+        inner += renderConfidence(item);
       }
+
+      inner += `</div>`;
+      return inner;
     }
-    updateProgress();
-  }
-});
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting) {
-      document.querySelectorAll(".rail-item").forEach(r => r.classList.remove("active"));
-      const match = document.querySelector(`.rail-item[data-target="${entry.target.id}"]`);
-      if(match) match.classList.add("active");
-      const secCode = entry.target.id.replace("sec-","");
-      if(!sectionFirstSeen[secCode]) sectionFirstSeen[secCode] = Date.now();
+    function renderAssessment() {
+      SECTIONS.forEach(section => {
+        const block = document.createElement("section");
+        block.className = "block";
+        block.id = `sec-${section.code}`;
+        block.innerHTML = `
+          <div class="block-head">
+            <span class="block-code">بخش ${section.code}</span>
+            <span class="block-title">${escapeHtml(section.title)}</span>
+            <span class="block-weight">${escapeHtml(section.weight)}</span>
+          </div>
+          <div class="block-desc">${escapeHtml(section.desc)}</div>
+        `;
+
+        for (const item of ITEMS.filter(it => it.section === section.code)) {
+          block.insertAdjacentHTML("beforeend", renderItem(item));
+        }
+        formRoot.appendChild(block);
+
+        const railItem = document.createElement("div");
+        railItem.className = "rail-item";
+        railItem.dataset.target = `sec-${section.code}`;
+        railItem.innerHTML = `<span class="code mono">${section.code}</span><span>${escapeHtml(section.title)}</span>`;
+        railItem.addEventListener("click", () => {
+          document.getElementById(`sec-${section.code}`).scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        railList.appendChild(railItem);
+      });
     }
-  });
-}, {rootMargin:"-20% 0px -70% 0px"});
-document.querySelectorAll("section.block").forEach(s => observer.observe(s));
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    tabBlurCount++;
-    lastBlurTime = Date.now();
-  } else {
-    if (lastBlurTime > 0) {
-      totalBlurTimeSec += Math.round((Date.now() - lastBlurTime) / 1000);
-      lastBlurTime = 0;
+    renderAssessment();
+
+    // =====================================================================
+    // Interaction & process tracking
+    // =====================================================================
+    function markAnswered(id, value) {
+      answers[id] = value;
+      if (!itemFirstAnswered[id] && normalizeAnswerValue(value) !== "") {
+        itemFirstAnswered[id] = Date.now();
+      }
+      updateProgress();
     }
-  }
-});
 
-function requiredIds() {
-  const ids = [];
-  ITEMS.forEach(it => {
-    if(it.type === "info") return;
-    ids.push(it.id);
-    if(it.extra && it.extra.required) ids.push(it.extra.id);
-  }); return ids;
-}
+    formRoot.addEventListener("change", event => {
+      const target = event.target;
 
-function updateProgress() {
-  const req = requiredIds();
-  const done = req.filter(id => { const v=answers[id]; return v!==undefined && v!==null && String(v).trim()!==""; });
-  document.getElementById("progressCount").textContent = done.length;
-  document.getElementById("progressTotal").textContent = req.length;
-  document.getElementById("progressFill").style.width = (done.length/req.length*100) + "%";
-}
-updateProgress();
+      if (target.type === "radio") {
+        markAnswered(target.name, parseInt(target.value, 10));
+        const wrap = target.closest(".options");
+        if (wrap) {
+          wrap.querySelectorAll(".opt").forEach(opt => opt.classList.remove("checked"));
+          const selected = target.closest(".opt");
+          if (selected) selected.classList.add("checked");
+        }
+      }
 
-function collectOpenQA() {
-  const list = [];
-  ITEMS.forEach(it => {
-    if(it.type === "open") { list.push({id: it.id, q: it.text.replace(/\n/g," "), a: answers[it.id] || "", minW: it.idealMinWords || 5}); }
-    if(it.extra) {
-      const val = answers[it.extra.id] || "";
-      if(it.extra.required || val.trim() !== "") list.push({id: it.extra.id, q: `[توضیح تکمیلی سؤال ${qNumber(it.id)}] ${it.extra.label}`, a: val, minW: it.extra.idealMinWords || 5});
-    }
-  });
-  return list;
-}
-
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch(GAS_WEB_APP_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "init", clientHost: window.location.hostname })
+      if (target.tagName === "SELECT") {
+        markAnswered(target.dataset.id, target.value);
+      }
     });
-    const data = await res.json();
-    if (data.token) sessionToken = data.token;
-  } catch (err) {
-    console.error("خطا در ارتباط اولیه با سرور:", err);
-  }
-});
 
-async function apiCall(payload, statusText) {
-  const statusBox = document.getElementById("statusMsg");
-  statusBox.className = "status info";
-  statusBox.innerHTML = `<span class="spinner"></span> ${statusText}`;
-  
-  if (!sessionToken) throw new Error("ارتباط امن با سرور برقرار نشد (نشست مفقود است). لطفاً صفحه را رفرش کنید.");
-  payload.sessionToken = sessionToken;
-  
-  const res = await fetch(GAS_WEB_APP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || "خطای سرور");
-  return data;
-}
+    formRoot.addEventListener("input", event => {
+      const target = event.target;
+      if (!(target.tagName === "TEXTAREA" || (target.tagName === "INPUT" && target.type === "number"))) return;
 
-document.getElementById("submitBtn").addEventListener("click", async () => {
-  const name = document.getElementById("pName").value.trim();
-  const age = document.getElementById("pAge").value.trim();
-  const contact = document.getElementById("pContact").value.trim();
-  const missingBox = document.getElementById("missingList");
-  const statusBox = document.getElementById("statusMsg");
-  missingBox.textContent = ""; statusBox.textContent = ""; statusBox.className = "status";
+      markAnswered(target.dataset.id, target.value);
 
-  const missing = [];
-  if(!name) missing.push("نام و نام‌خانوادگی");
-  if(!age) missing.push("سن");
-  else if (parseInt(age) < 16) missing.push("حداقل سن ۱۶ سال است");
-
-  requiredIds().forEach(id => {
-    const v = answers[id];
-    if(v===undefined || v===null || String(v).trim()==="") { missing.push(id); }
-  });
-  
-  if(missing.length) {
-    missingBox.textContent = "موارد ناتمام یا دارای خطا: " + missing.join("، ");
-    return;
-  }
-
-  const submitBtn = document.getElementById("submitBtn");
-  submitBtn.disabled = true;
-
-  try {
-    const openQA = collectOpenQA();
-    const participantInfo = { name, age, contact };
-    
-    // لایه ۱: استخراج متریک‌های خام و واقعیت‌های سخت (Hard Facts)
-    const scorePayload = { 
-      action: "score", 
-      answers: answers, 
-      timings: { sectionFirstSeen, itemFirstAnswered }, 
-      openQA: openQA,
-      participant: participantInfo,
-      tabTracking: { blurCount: tabBlurCount, totalBlurTime: totalBlurTimeSec }
-    };
-    const scoreResponse = await apiCall(scorePayload, "محاسبه واقعیت‌های سخت (لایه ۱)...");
-
-    // لایه ۲: تحلیل و ارزیابی توسط هوش مصنوعی جمینای
-    const aiResponse = await apiCall(
-      { action: "gemini", openQA: openQA, hardFacts: scoreResponse.hardFacts },
-      "تحلیل ابعاد شناختی توسط هوش مصنوعی (لایه ۲)..."
-    );
-
-    // لایه ۳: تصمیم‌گیری و تولید پروفایل نهایی
-    const finalizeResponse = await apiCall(
-      { action: "finalize", hardFacts: scoreResponse.hardFacts, aiResult: aiResponse, participant: participantInfo, answers: answers },
-      "تصمیم‌گیری قطعی و تدوین پروفایل نهایی (لایه ۳)..."
-    );
-
-    // ارسال داده‌ها به ربات تلگرام مدیر سیستم
-    await apiCall(
-      { action: "telegram", reportText: finalizeResponse.reportText, reportData: finalizeResponse.reportData },
-      "در حال ارسال امن داده‌ها به سیستم مرکزی..."
-    );
-
-    statusBox.textContent = "آزمون با موفقیت ثبت و پردازش شد.";
-    statusBox.className = "status ok";
-    
-    document.getElementById("submitZone").classList.add("done");
-    document.getElementById("reportBox").textContent = finalizeResponse.reportText;
-    document.getElementById("doneScreen").classList.add("show");
-    document.getElementById("doneScreen").scrollIntoView({behavior:"smooth"});
-
-    // دکمه‌های دانلود و کپی کردن نتیجه
-    document.getElementById("downloadBtn").onclick = () => {
-      const blob = new Blob([finalizeResponse.reportText], {type:"text/plain;charset=utf-8"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = `exam-${name.replace(/\s+/g,"_")}.txt`; a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    document.getElementById("copyBtn").onclick = () => {
-      try {
-        document.execCommand('copy');
-        navigator.clipboard.writeText(finalizeResponse.reportText);
-        alert("گزارش با موفقیت در کلیپ‌بورد کپی شد.");
-      } catch (err) {
-        // Fallback for iFrame or unsupported environments
-        const textArea = document.createElement("textarea");
-        textArea.value = finalizeResponse.reportText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
+      if (target.tagName === "TEXTAREA") {
+        const cc = document.getElementById(`${target.dataset.id}_cc`);
+        const limit = wordLimitOf(target.dataset.id);
+        if (cc && limit) {
+          const count = wordCount(target.value);
+          cc.textContent = `${count.toLocaleString("fa-IR")} / ${limit} کلمه`;
+          cc.classList.toggle("warn", count > limit);
+        }
       }
-    };
+    });
 
-  } catch(err) {
-    statusBox.textContent = "خطا در پردازش: " + err.message;
-    statusBox.className = "status err";
-    submitBtn.disabled = false;
-  }
-});
-</script>
+    const sectionObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        document.querySelectorAll(".rail-item").forEach(item => item.classList.remove("active"));
+        const match = document.querySelector(`.rail-item[data-target="${entry.target.id}"]`);
+        if (match) match.classList.add("active");
+        const sectionCode = entry.target.id.replace("sec-", "");
+        if (!sectionFirstSeen[sectionCode]) sectionFirstSeen[sectionCode] = Date.now();
+      }
+    }, { rootMargin: "-20% 0px -70% 0px" });
+
+    const itemObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const id = entry.target.dataset.itemId;
+          if (id && !itemShownAt[id]) itemShownAt[id] = Date.now();
+        }
+      }
+    }, { rootMargin: "-10% 0px -65% 0px" });
+
+    document.querySelectorAll("section.block").forEach(section => sectionObserver.observe(section));
+    document.querySelectorAll("[data-item-id]").forEach(item => itemObserver.observe(item));
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        tabBlurCount += 1;
+        lastBlurTime = Date.now();
+      } else if (lastBlurTime > 0) {
+        totalBlurTimeSec += Math.max(0, Math.round((Date.now() - lastBlurTime) / 1000));
+        lastBlurTime = 0;
+      }
+    });
+
+    function updateProgress() {
+      const required = requiredIds();
+      const done = required.filter(id => normalizeAnswerValue(answers[id]) !== "");
+      document.getElementById("progressCount").textContent = done.length.toLocaleString("fa-IR");
+      document.getElementById("progressTotal").textContent = required.length.toLocaleString("fa-IR");
+      document.getElementById("progressFill").style.width = `${required.length ? (done.length / required.length) * 100 : 0}%`;
+    }
+
+    updateProgress();
+
+    // =====================================================================
+    // Backend communication
+    // =====================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "init",
+            assessmentVersion: ASSESSMENT_VERSION,
+            clientHost: window.location.hostname
+          })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data.token) throw new Error("نشست معتبر از سرور دریافت نشد.");
+        sessionToken = data.token;
+      } catch (error) {
+        console.error("خطا در ارتباط اولیه با سرور:", error);
+        setStatus("ارتباط اولیه با سرور برقرار نشد. صفحه را تازه‌سازی کنید.", "err");
+      }
+    });
+
+    async function apiCall(payload, statusText) {
+      setStatus(`<span class="spinner"></span>${escapeHtml(statusText)}`, "info");
+
+      if (!sessionToken) {
+        throw new Error("نشست معتبر با سرور برقرار نشده است. صفحه را تازه‌سازی کنید.");
+      }
+
+      const body = {
+        ...payload,
+        assessmentVersion: ASSESSMENT_VERSION,
+        sessionToken
+      };
+
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) throw new Error(`خطای ارتباطی HTTP ${response.status}`);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message || "خطای سرور");
+      return data;
+    }
+
+    // =====================================================================
+    // Validation & payload creation
+    // =====================================================================
+    function collectOpenQA() {
+      const list = [];
+      for (const item of ITEMS) {
+        if (item.type !== "open") continue;
+        list.push({
+          id: item.id,
+          a: answers[item.id] || "",
+          minW: item.idealMinWords || 5
+        });
+      }
+
+      for (const item of ITEMS) {
+        if (!item.extra) continue;
+        const value = answers[item.extra.id] || "";
+        if (item.extra.required || value.trim() !== "") {
+          list.push({
+            id: item.extra.id,
+            parentId: item.id,
+            a: value,
+            minW: item.extra.idealMinWords || 5
+          });
+        }
+      }
+      return list;
+    }
+
+    function collectTimings() {
+      const now = Date.now();
+      const responseLatencySec = {};
+
+      for (const item of ITEMS) {
+        if (item.type === "info") continue;
+        const shown = itemShownAt[item.id];
+        const answered = itemFirstAnswered[item.id];
+        if (shown && answered) {
+          responseLatencySec[item.id] = Math.max(0, Math.round((answered - shown) / 1000));
+        }
+      }
+
+      return {
+        sectionFirstSeen: { ...sectionFirstSeen },
+        itemShownAt: { ...itemShownAt },
+        itemFirstAnswered: { ...itemFirstAnswered },
+        responseLatencySec,
+        clientStartedAt: Object.keys(sectionFirstSeen).length
+          ? Math.min(...Object.values(sectionFirstSeen))
+          : now
+      };
+    }
+
+    function validateForm() {
+      const missing = [];
+      const name = document.getElementById("pName").value.trim();
+      const age = document.getElementById("pAge").value.trim();
+      const consent = document.getElementById("consent").checked;
+
+      if (!name) missing.push("نام و نام‌خانوادگی");
+      if (!age) {
+        missing.push("سن");
+      } else {
+        const parsedAge = parseInt(age, 10);
+        if (!Number.isFinite(parsedAge) || parsedAge < 16 || parsedAge > 100) {
+          missing.push("سن معتبر (۱۶ تا ۱۰۰ سال)");
+        }
+      }
+      if (!consent) missing.push("تأیید رضایت و اطلاع از نحوهٔ پردازش داده‌ها");
+
+      for (const id of requiredIds()) {
+        if (normalizeAnswerValue(answers[id]) === "") {
+          const baseId = id.endsWith("_conf") ? id.slice(0, -5) : id;
+          const item = ITEMS.find(it => it.id === baseId);
+          if (id.endsWith("_conf")) {
+            missing.push(`سطح اطمینان سؤال ${item ? item.number : baseId}`);
+          } else if (item) {
+            missing.push(`سؤال ${item.number}`);
+          } else {
+            missing.push(id);
+          }
+        }
+      }
+
+      return { valid: missing.length === 0, missing, name, age, consent };
+    }
+
+    // =====================================================================
+    // Submission workflow
+    // =====================================================================
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      if (submissionStarted) return;
+
+      const validation = validateForm();
+      const missingBox = document.getElementById("missingList");
+      missingBox.textContent = "";
+
+      if (!validation.valid) {
+        missingBox.textContent = `موارد ناتمام یا دارای خطا: ${validation.missing.join("، ")}`;
+        setStatus("لطفاً موارد مشخص‌شده را تکمیل کنید.", "warn");
+        return;
+      }
+
+      submissionStarted = true;
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+
+      const name = validation.name;
+      const age = validation.age;
+      const contact = document.getElementById("pContact").value.trim();
+
+      try {
+        const openQA = collectOpenQA();
+        const timings = collectTimings();
+        const participant = { name, age, contact };
+
+        // Layer 1: server-side objective scoring / hard facts.
+        const scoreResponse = await apiCall({
+          action: "score",
+          answers: { ...answers },
+          timings,
+          openQA,
+          participant,
+          tabTracking: {
+            blurCount: tabBlurCount,
+            totalBlurTime: totalBlurTimeSec
+          }
+        }, "در حال ثبت واقعیت‌های عملکردی آزمون...");
+
+        // Layer 2: rubric-based qualitative analysis.
+        const aiResponse = await apiCall({
+          action: "gemini",
+          openQA,
+          hardFacts: scoreResponse.hardFacts
+        }, "در حال ارزیابی پاسخ‌های تشریحی بر اساس rubric...");
+
+        // Layer 3: deterministic finalization on the server.
+        const finalizeResponse = await apiCall({
+          action: "finalize",
+          hardFacts: scoreResponse.hardFacts,
+          aiResult: aiResponse,
+          participant
+        }, "در حال نهایی‌سازی پروفایل ارزیابی...");
+
+        // Admin notification / central delivery.
+        await apiCall({
+          action: "telegram",
+          reportText: finalizeResponse.reportText,
+          reportData: finalizeResponse.reportData
+        }, "در حال ثبت نتیجه در سیستم مرکزی...");
+
+        document.getElementById("submitZone").classList.add("done");
+        document.getElementById("doneScreen").classList.add("show");
+        document.getElementById("doneScreen").scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (error) {
+        console.error(error);
+        submissionStarted = false;
+        submitBtn.disabled = false;
+        setStatus(`خطا در پردازش: ${escapeHtml(error.message || "خطای نامشخص")}`, "err");
+      }
+    });
+  </script>
 </body>
 </html>
