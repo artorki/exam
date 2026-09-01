@@ -10,7 +10,7 @@
 <style>
   :root {
     --paper: #ECE7DA; --paper-2: #E2DCCB; --ink: #1E211C; --ink-soft: #54544C;
-    --line: #CFC6AE; --accent: #A63B2C; --accent-soft: #A63B2C22; --ok: #3D6B4C; --radius: 2px;
+    --line: #CFC6AE; --accent: #A63B2C; --accent-soft: #A63B2C22; --ok: #3D6B4C; --radius: 4px;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -28,7 +28,7 @@
   .rail-item.active .code { color: var(--accent); }
   
   .rail-progress { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
-  .rail-bar { height: 3px; background: var(--line); margin-top: 8px; position: relative; overflow: hidden; }
+  .rail-bar { height: 3px; background: var(--line); margin-top: 8px; position: relative; overflow: hidden; border-radius: var(--radius); }
   .rail-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s; }
   
   .top { padding-top: 8px; margin-bottom: 56px; }
@@ -36,12 +36,13 @@
   h1 { font-size: 28px; font-weight: 900; margin: 10px 0 16px; letter-spacing: -.01em; }
   .lead { color: var(--ink-soft); font-size: 15px; max-width: 60ch; }
   
-  .instructions { margin-top: 24px; padding: 18px 20px; background: var(--paper-2); border-right: 3px solid var(--accent); font-size: 14px; color: var(--ink-soft); }
+  .instructions { margin-top: 24px; padding: 18px 20px; background: var(--paper-2); border-right: 3px solid var(--accent); font-size: 14px; color: var(--ink-soft); border-radius: var(--radius); }
   .instructions ul { margin: 8px 0 0; padding-right: 20px; }
   
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
-  .field input[type=text], .field input[type=number] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14px; border-radius: var(--radius); }
+  .field input[type=text], .field input[type=number] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14px; border-radius: var(--radius); transition: border-color 0.2s; }
+  .field input:focus { outline: none; border-color: var(--accent); }
   .field-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
   @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
   
@@ -56,39 +57,42 @@
   .q:last-child { border-bottom: none; }
   .q-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; }
   .q-text { font-size: 15.5px; margin-bottom: 14px; white-space: pre-line; }
-  .data-block { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; background: var(--paper-2); padding: 14px 16px; margin: 10px 0 16px; white-space: pre; overflow-x: auto; border-radius: 2px; }
+  .data-block { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; background: var(--paper-2); padding: 14px 16px; margin: 10px 0 16px; white-space: pre; overflow-x: auto; border-radius: var(--radius); }
   
   .options { display: flex; flex-direction: column; gap: 8px; }
   .opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-size: 14px; border-radius: var(--radius); transition: border-color .15s, background .15s; }
   .opt:hover { border-color: var(--ink-soft); }
   .opt.checked { border-color: var(--accent); background: var(--accent-soft); }
-  .opt input { margin-top: 3px; }
+  .opt input { margin-top: 3px; accent-color: var(--accent); }
   
-  textarea, input[type=number].ans { width: 100%; padding: 12px 14px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; border-radius: var(--radius); resize: vertical; }
+  textarea, input[type=number].ans { width: 100%; padding: 12px 14px; border: 1px solid var(--line); background: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; border-radius: var(--radius); resize: vertical; transition: border-color 0.2s; }
+  textarea:focus, input[type=number].ans:focus { outline: none; border-color: var(--accent); }
   textarea { min-height: 80px; line-height: 1.7; }
   input[type=number].ans { width: 140px; font-family: 'JetBrains Mono', monospace; }
   
   .charcount { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 4px; text-align: left; }
-  .charcount.warn { color: var(--accent); }
+  .charcount.warn { color: var(--accent); font-weight: bold; }
   
   .extra-field { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
   .extra-field label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
   .conf-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
   .conf-row label { font-size: 13px; color: var(--ink-soft); }
-  select { padding: 8px 10px; border: 1px solid var(--line); background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; border-radius: 2px; }
+  select { padding: 8px 10px; border: 1px solid var(--line); background: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; border-radius: var(--radius); outline: none; }
+  select:focus { border-color: var(--accent); }
   
-  .submit-zone { margin-top: 40px; padding: 28px; background: var(--paper-2); border-radius: 2px; position: sticky; bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.08); z-index: 10; }
+  .submit-zone { margin-top: 40px; padding: 28px; background: var(--paper-2); border-radius: var(--radius); position: sticky; bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.08); z-index: 10; }
   .submit-zone h3 { margin: 0 0 8px; font-size: 16px; }
   .submit-zone p { margin: 0 0 18px; font-size: 13px; color: var(--ink-soft); }
   .submit-zone.done { position: static; box-shadow: none; display: none; }
   
-  .btn { appearance: none; border: none; padding: 13px 26px; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer; border-radius: 2px; transition: opacity .15s, transform .1s; }
+  .btn { appearance: none; border: none; padding: 13px 26px; font-family: 'Vazirmatn', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer; border-radius: var(--radius); transition: opacity .15s, transform .1s, background-color .2s; }
   .btn:active { transform: scale(.98); }
   .btn-primary { background: var(--ink); color: var(--paper); }
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
   .btn-ghost { background: transparent; border: 1px solid var(--ink-soft); color: var(--ink); }
+  .btn-ghost:hover { background: rgba(0,0,0,0.05); }
   
-  .status { margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace; white-space: pre-line; }
+  .status { margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace; white-space: pre-line; transition: color 0.3s; }
   .status.ok { color: var(--ok); }
   .status.err { color: var(--accent); }
   .status.info { color: var(--ink-soft); }
@@ -97,7 +101,7 @@
   .done-screen { display: none; }
   .done-screen.show { display: block; animation: fadeIn 0.5s ease; }
   .done-screen h2 { font-size: 22px; }
-  .report-box { margin-top: 18px; padding: 16px; background: #fff; border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; line-height: 1.6; border-radius: var(--radius); }
+  .report-box { margin-top: 18px; padding: 16px; background: #fff; border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; line-height: 1.6; border-radius: var(--radius); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
   .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
   
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--ink-soft); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-left: 8px; }
@@ -121,32 +125,31 @@
     <div class="top">
       <div class="eyebrow">Cognitive & Analytical Assessment</div>
       <h1>پرسشنامه تحلیلی-شناختی</h1>
-      <p class="lead">۱۲ سؤال، حدود ۲۰ تا ۳۰ دقیقه. خروجی یک پروفایل چندمحوره است، نه یک نمرهٔ واحد.</p>
+      <p class="lead">۱۲ سؤال، حدود ۲۰ تا ۳۰ دقیقه. خروجی یک پروفایل چندمحوره و غیررسمی (Heuristic) است، نه یک نمرهٔ بالینی یا قطعی علمی.</p>
       <div class="instructions">
         این آزمون تحلیل سیستم‌ها، استدلال علّی، ارزیابی شواهد، مدل‌سازی، یادگیری و انتقال ساختار و بازبینی باورها را می‌سنجد.
         <ul>
-          <li>در سؤالات باز: دقیق و مصداقی بنویسید؛ فرض‌های خود را مشخص کنید.</li>
+          <li>در سؤالات باز: اختصار و دقت تحلیلی بر طولانی‌نویسی ارجحیت دارد.</li>
           <li>در سؤالات دارای «اطمینان»، سطح واقعی اطمینان خود را اعلام کنید.</li>
-          <li>اگر در هنگام پاسخگویی مکرراً از صفحه خارج شوید، در پروفایل شما ثبت خواهد شد.</li>
+          <li>اگر در هنگام پاسخگویی مکرراً از صفحه خارج شوید، سیستم آن را ردیابی کرده و در پروفایل شما ثبت خواهد کرد.</li>
         </ul>
       </div>
       <div class="field-row" style="margin-top:24px;">
         <div class="field">
           <label>نام و نام‌خانوادگی *</label>
-          <input type="text" id="pName" required>
+          <input type="text" id="pName" required placeholder="مثال: علی حسینی">
         </div>
         <div class="field">
-          <label>سن *</label>
-          <input type="number" id="pAge" required min="10" max="100">
+          <label>سن * (حداقل ۱۶ سال)</label>
+          <input type="number" id="pAge" required min="16" max="100" placeholder="مثال: 25">
         </div>
       </div>
       <div class="field">
         <label>راه ارتباطی (اختیاری)</label>
-        <input type="text" id="pContact">
+        <input type="text" id="pContact" placeholder="ایمیل یا شماره تماس جهت پیگیری بعدی...">
       </div>
     </div>
 
-    <!-- Container for dynamic form generation -->
     <div id="formRoot"></div>
 
     <div class="submit-zone" id="submitZone">
@@ -157,12 +160,12 @@
       <div class="missing-list" id="missingList"></div>
     </div>
 
-    <!-- Post-submission screen -->
     <div class="done-screen" id="doneScreen">
       <h2>سپاسگزاریم — آزمون با موفقیت ثبت شد</h2>
-      <p class="lead">گزارش پروفایل شناختی شما در زیر قابل مشاهده است.</p>
+      <p class="lead">گزارش و پروفایل شناختی شما آماده است.</p>
       <div class="btn-row">
         <button class="btn btn-ghost" id="downloadBtn">دانلود گزارش (TXT)</button>
+        <button class="btn btn-ghost" id="copyBtn">کپی کردن در کلیپ‌بورد</button>
       </div>
       <div class="report-box" id="reportBox"></div>
     </div>
@@ -170,14 +173,15 @@
 </div>
 
 <script>
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlZLYBMZQM8ysos4EzMRJWZQfPjjRyV9xEKytVPOW9CFiiJ7uM8_Xo_kAl31wAvlIRsw/exec";
+// آدرس Web App مربوط به Google Apps Script خود را در اینجا قرار دهید
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby9x-PzYSCbL1kQ0QT31BRSOWm0eqHlDCSqSOZrlKSJsGSsqY3WrNLvdYVGWFkFgEQ/exec";
 
 let sessionToken = null;
 const answers = {};
 const sectionFirstSeen = {};
 const itemFirstAnswered = {};
 
-// Tab tracking variables (Soft flag for L1)
+// متغیرهای ردیابی تمرکز کاربر
 let tabBlurCount = 0;
 let totalBlurTimeSec = 0;
 let lastBlurTime = 0;
@@ -187,37 +191,37 @@ const SECTIONS = [
   {code:"B", title:"تفکر نقاد و ارزیابی شواهد", weight:"۲۰٪", desc:"سنجش تشخیص سوگیری، تحلیل داده‌ها و ارزیابی فرضیه‌ها"},
   {code:"C", title:"یادگیری سریع و انتقال ساختار", weight:"۳۰٪ · مهم‌ترین بخش", desc:"سنجش کشف قوانین پنهان و تعمیم الگوها بدون دانش قبلی"},
   {code:"D", title:"انعطاف شناختی و بازبینی مدل", weight:"۱۵٪", desc:"سنجش تواضع فکری، تغییر باور بر اساس شواهد و خلاقیت"},
-  {code:"E", title:"کالیبراسیون معرفتی", weight:"۱۰٪", desc:"سنجش سنجیده بودن میزان اطمینان فرد به دانش خود"}
+  {code:"E", title:"ارزیابی شواهد و عدم‌قطعیت", weight:"۱۰٪", desc:"سنجش قضاوت در شرایط اطلاعات ناقص و تخصیص وزن به شواهد"}
 ];
 
 const ITEMS = [
   {
-    id: "q1", section: "A", type: "open", wordLimit: 150, idealMinWords: 25,
+    id: "q1", section: "A", type: "open", wordLimit: 150, idealMinWords: 15,
     text: "یک جعبه‌سیاه یا دستگاه مکانیکی ناشناخته را بررسی می‌کنید:\nفرایند ورودی اجرا می‌شود → مکث دقیقاً ۲ ثانیه‌ای → تلاش برای ارسال یک سیگنال به محیط → ادامه فرایند.\nوقتی گیرنده سیگنال در محیط کاملاً مسدود و قطع است، آن مکث ۲ ثانیه‌ای همچنان با همان دقت رخ می‌دهد.\nالف) این مشاهده کدام فرضیه را تضعیف می‌کند؟\nب) کدام توضیح جایگزین را تقویت می‌کند؟\nج) اگر فقط مجاز به انجام یک آزمایش دیگر باشید، چه چیزی را تغییر می‌دهید و چرا؟"
   },
   {
     id: "q2", section: "A", type: "mcq", hasConf: true,
-    extra: { id: "q2_explain", label: "دلیل تحلیل خود را در یک جمله بنویسید:", wordLimit: 40, required: true, idealMinWords: 5 },
+    extra: { id: "q2_explain", label: "دلیل تحلیل خود را در یک جمله بنویسید:", wordLimit: 40, required: true, idealMinWords: 4 },
     text: "در یک اکوسیستم یا سیستم پیچیده، با افزایش متغیر X معمولاً Y افزایش می‌یابد. اما در برخی شرایط X زیاد می‌شود ولی Y ثابت می‌ماند؛ گاهی Y تغییر می‌کند بدون آن‌که X تغییر کرده باشد؛ و با تغییر متغیر سوم (Z)، کلاً رابطه X و Y معکوس می‌شود. کدام تفسیر از نظر منطق سیستمی درست‌تر است؟",
     options: [
       "متغیر X علت مستقیم Y است و بقیه حالات صرفاً نویز آزمایشگاهی هستند.",
       "رابطه X و Y غیرعلّی یا غیرمستقیم است و تحت کنترل یک شبکه تعادلی یا متغیر واسط مثل Z قرار دارد.",
-      "رابطه‌ی X و Y احتمالاً غیرمستقیم است، اما بدون دسترسی به داده‌ی بیشتر نمی‌توان مکانیسم آن را حتی حدس زد.",
+      "رابطه‌ی X و Y احتمالاً غیرمستقیم است، اما بدون داده‌ی بیشتر هیچ فرضیه‌ای دربارهٔ مکانیسم قابل طرح نیست و باید کاملاً از تحلیل بیشتر صرف‌نظر کرد.",
       "متغیر Z نشان‌دهنده اشتباه بودن کل داده‌های جمع‌آوری‌شده است."
     ]
   },
   {
-    id: "q3", section: "B", type: "open", wordLimit: 150, idealMinWords: 25,
-    text: "آمارها نشان می‌دهند در شهرهایی که تعداد کتابخانه‌های عمومی بیشتر است، نرخ گزارش جرائم هم بالاتر است. یک تحلیل‌گر نتیجه می‌گیرد: «کتابخانه‌ها باعث افزایش جرم می‌شوند».\nحداقل دو توضیح جایگزین (متغیر پنهان یا میانجی) برای این همبستگی ارائه کنید و بگویید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است؟"
+    id: "q3", section: "B", type: "open", wordLimit: 150, idealMinWords: 15,
+    text: "آمارها نشان می‌دهد در سازمان‌هایی که دوره‌های آموزشی «مدیریت استرس و بهداشت روان» بیشتری برگزار می‌شود، نرخ مرخصی‌های استعلاجی و فرسودگی شغلی (Burnout) کارمندان نیز بالاتر است. یک مدیر نتیجه می‌گیرد: «این دوره‌ها نتیجه عکس دارند و باعث فرسودگی بیشتر می‌شوند».\nحداقل دو توضیح جایگزین (متغیر پنهان یا میانجی) برای این همبستگی ارائه کنید و بگویید چگونه می‌توان فهمید کدام توضیح به حقیقت نزدیک‌تر است؟"
   },
   {
     id: "q4", section: "B", type: "mcq", hasConf: true,
-    text: "یک ابزار تشخیصی برای شناسایی یک ویژگی بسیار نادر در جامعه (مثلاً ۱ در ۱۰۰۰ نفر) طراحی شده است. دقت این ابزار ۹۹٪ است (یعنی ۱٪ خطای مثبت کاذب دارد). اگر تست یک فرد مثبت شود، کدام گزاره درباره وضعیت او درست‌تر است؟",
+    text: "یک روش سنتی محلی برای شناسایی زودهنگام یک بیماری بسیار نادر در گیاهان به کار می‌رود (شیوع واقعی: ۱ در ۱۰۰۰ بوته). این روش در ۹۹٪ موارد درست تشخیص می‌دهد (۱٪ هشدار کاذب). اگر روی یک بوتهٔ خاص هشدار داده شود، کدام گزاره منطقی‌تر است؟",
     options: [
-      "به احتمال ۹۹٪ فرد دارای آن ویژگی است.",
-      "احتمال واقعی دارای بودن ویژگی همچنان زیر ۱۰٪ است، زیرا نرخ پایه ویژگی در جامعه بسیار پایین است.",
+      "به احتمال ۹۹٪ بوته دارای بیماری است.",
+      "احتمال واقعی وجود بیماری در این بوته همچنان زیر ۱۰٪ است، زیرا نرخ پایه این بیماری در کل محصولات بسیار پایین است.",
       "نتیجه تست هیچ اطلاعاتی به ما نمی‌دهد و کاملاً تصادفی است.",
-      "چون تست علمی است، احتمال خطا وجود ندارد."
+      "به دلیل دقت ۹۹ درصدی روش، احتمال خطا تنها در صورت اشتباه انسانی در اجرای روش وجود دارد."
     ]
   },
   {
@@ -230,38 +234,38 @@ const ITEMS = [
   { id: "q7", section: "C", type: "number", text: "(7, 7, 9) → ؟" },
   { id: "q8", section: "C", type: "open", wordLimit: 40, idealMinWords: 3, text: "قانون حاکم بر این سیستم را در یک جمله شفاف و بدون ابهام توضیح دهید." },
   {
-    id: "q9", section: "D", type: "open", wordLimit: 180, idealMinWords: 30,
-    text: "یک باور یا فرض بنیادی درباره انسان، هنر، جامعه، یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.\nبنویسید: ۱) چه چیزی باعث شد بفهمید مدل قبلی‌تان ناقص است؟ ۲) خطای شناختی اصلی شما در مدل اول چه بود؟"
+    id: "q9", section: "D", type: "open", wordLimit: 180, idealMinWords: 20,
+    text: "یک باور یا فرض بنیادی درباره انسان، هنر، جامعه، یا دانش را نام ببرید که در گذشته به آن کاملاً مطمئن بودید، اما بعداً آن را کنار گذاشتید یا اصلاح کردید.\nبنویسید: ۱) مدل قبلی‌تان چه پیش‌بینی مشخصی می‌داد که در عمل نادرست از آب درآمد؟ ۲) آن شاهد نقض دقیقاً چه بود (نه احساس کلی، بلکه یک رخداد یا مشاهدهٔ مشخص)؟ ۳) خطای شناختی اصلی در مدل اول چه بود؟"
   },
   {
     id: "q10", section: "D", type: "mcq", hasConf: true,
-    text: "سه نظریه رقیب برای توضیح یک پدیده وجود دارد: نظریه الف (۵۵٪ احتمال)، نظریه ب (۴۰٪ احتمال)، نظریه ج (۵٪ احتمال). یک شواهد جدید به دست می‌آید که احتمال صحت نظریه الف و ب را هر دو دقیقاً به یک نسبت (مثلاً ۲ برابر) تقویت می‌کند. منطقی‌ترین واکنش چیست؟",
+    text: "سه نظریه رقیب برای یک پدیده وجود دارد: الف (۶۰٪ احتمال اولیه)، ب (۳۰٪ احتمال اولیه)، ج (۱۰٪ احتمال اولیه). شواهد جدیدی کشف می‌شود که احتمال وقوع آن‌ها تحت نظریه الف ۱.۵ برابر حالت عادی، اما تحت نظریه ب ۳ برابر حالت عادی است. منطقی‌ترین واکنش چیست؟",
     options: [
-      "رتبه‌بندی نسبی نظریه الف و ب قطعاً تغییر نمی‌کند و الف مسلماً همچنان محتمل‌ترین نظریه است.",
-      "چون هر دو رشد کرده‌اند، دیگر نمی‌توان با قطعیت گفت الف برتر است و حفظ عدم‌قطعیت و بررسی بیشتر الزامی است.",
-      "نظریه ج به دلیل عدم تقویت در برابر دو نظریه دیگر کاملاً رد و از فضای احتمالات حذف می‌شود.",
-      "نظریه ب به دلیل رشد همزمان، شکاف خود را با الف پر می‌کند و احتمال آن‌ها برابر می‌شود."
+      "نظریه الف مسلماً همچنان محتمل‌ترین است چون احتمال اولیه‌اش دو برابر ب بود.",
+      "نظریه ب به دلیل رشد شدیدتر، فوراً از الف پیشی می‌گیرد و محتمل‌ترین می‌شود.",
+      "احتمال صحت نظریه الف و ب اکنون برابر می‌شود و باید بررسی بیشتری کرد.",
+      "نظریه ج به دلیل عدم تقویت، کاملاً از فضای احتمالات حذف می‌شود."
     ]
   },
   {
     id: "q11", section: "E", type: "mcq", hasConf: true,
-    extra: { id: "q11_explain", label: "ملاک وزن‌دهی شما به شواهد چه بود؟", wordLimit: 50, required: true, idealMinWords: 5 },
-    text: "درباره زمان وقوع یک حادثه، سه شاهد داریم:\nشاهد ۱ (نزدیک به صحنه، با سابقه خطای دید): حادثه قبل از زنگ ساعت رخ داد.\nشاهد ۲ (دورتر، با دقت بالای تاریخی): حادثه بعد از زنگ ساعت رخ داد.\nشاهد ۳ (فقط صدا را شنیده): صدای زنگ ساعت دقیقاً رأس ساعت ۱۲ بود.\nکدام گزاره منطقی‌تر است؟",
+    extra: { id: "q11_explain", label: "ملاک وزن‌دهی شما به شواهد چه بود؟", wordLimit: 50, required: true, idealMinWords: 4 },
+    text: "درباره زمان وقوع یک حادثه، سه شاهد داریم:\nشاهد ۱ (نزدیک به صحنه، با سابقه خطای دید): حادثه قبل از زنگ ساعت رخ داد.\nشاهد ۲ (دورتر، با دقت بالای تاریخی): حادثه بعد از زنگ ساعت رخ داد.\nشاهد ۳ (فقط صدا را شنیده): صدای زنگ ساعت دقیقاً رأس ساعت ۱۲ بود.\nکدام رویکرد تحلیلی قوی‌تر است؟",
     options: [
-      "گفته شاهد ۱ معتبرتر است چون به صحنه نزدیک‌تر بوده است.",
-      "گفته شاهد ۲ معتبرتر است چون سابقه دقت بهتری دارد.",
-      "بدون داشتن ماتریس وزن‌دهی به کیفیت مشاهده و خطاهای احتمالی، نمی‌توان با قطعیت ترتیب زمان را تعیین کرد.",
-      "شاهد ۳ (فقط صدا را شنیده) چون بی‌طرف‌ترین و بدون سوگیری دیداری است، شاهد ۲ (دقت تاریخی بالا) را تأیید می‌کند و با اطمینان نسبی می‌توان گفت حادثه بعد از زنگ رخ داده است."
+      "گفته شاهد ۱ معتبرتر است چون مجاورت فیزیکی همیشه اولویت دارد.",
+      "گفته شاهد ۲ معتبرتر است چون سابقه دقت و قابلیت اتکای بالاتری دارد.",
+      "بدون داشتن اطلاعات دقیق‌تر از زمینه، هرگونه قضاوت بی‌اساس است و باید از هرگونه نتیجه‌گیری کاملاً اجتناب کرد.",
+      "شاهد ۳ به دلیل مستقل بودن از سوگیری دیداری، می‌تواند به‌طور مشروط ادعای شاهد ۲ را وزن‌دهی و تقویت کند، هرچند نتیجه قطعی نیست."
     ]
   },
   {
     id: "q12", section: "E", type: "mcq", hasConf: true,
-    text: "می‌دانیم: عنصر A با B مرتبط است، B با C مرتبط است، اما A هیچ رابطه مستقیم یا همبستگی با C ندارد. متغیر D هم با A و هم با C ارتباط مستقیم دارد. آیا می‌توان نتیجه گرفت که «D علت مشترک A و C است»؟",
+    text: "می‌دانیم: عنصر A با B مرتبط است، B با C مرتبط است، اما A هیچ رابطه مستقیم یا همبستگی آماری با C ندارد. متغیر D هم با A و هم با C ارتباط مستقیم دارد. آیا می‌توان نتیجه گرفت که «D علت مشترک A و C است»؟",
     options: [
-      "خیر قطعی؛ اگر D علت مشترک واقعی هر دو بود، A و C باید از طریق تأثیرپذیری مشترکشان از D، با یکدیگر همبستگی نشان می‌دادند.",
+      "نمی‌توان قطعی گفت؛ اگر D علت مشترک بود معمولاً A و C باید همبستگی نشان می‌دادند، مگر آنکه اثرات مسیرهای دیگر (مثل B) همدیگر را خنثی کرده باشند (اثر سرکوب).",
       "احتمالاً خیر، اما در سیستم‌های پیچیده نمی‌توان با قطعیت درباره عدم وجود یک رابطه نامرئی نظر داد.",
       "بله؛ چون D تنها متغیری است که مستقیماً با هر دو در ارتباط است.",
-      "بله؛ عدم همبستگی مستقیم A و C به نوعی این فرض را تقویت می‌کند."
+      "بله؛ عدم همبستگی مستقیم A و C نشان‌دهنده یک متغیر پنهان قوی مانند D است."
     ]
   }
 ];
@@ -282,7 +286,7 @@ function renderExtra(extra) {
   if(!extra) return "";
   return `<div class="extra-field">
     <label>${extra.label}</label>
-    <textarea data-id="${extra.id}" placeholder="پاسخ..."></textarea>
+    <textarea data-id="${extra.id}" placeholder="پاسخ (دقت و اختصار ارجحیت دارد)..."></textarea>
     ${extra.wordLimit ? `<div class="charcount mono" id="${extra.id}_cc">۰ / ${extra.wordLimit} کلمه</div>` : ""}
   </div>`;
 }
@@ -323,7 +327,7 @@ SECTIONS.forEach(sec => {
         inner += `<div class="conf-row">
           <label>سطح اطمینان از پاسخ:</label>
           <select data-id="${it.id}_conf">
-            <option value="">—</option>
+            <option value="">— انتخاب کنید —</option>
             <option value="1">۱ (کمتر از ۵۰٪)</option>
             <option value="2">۲ (۵۰–۶۹٪)</option>
             <option value="3">۳ (۷۰–۸۴٪)</option>
@@ -334,10 +338,10 @@ SECTIONS.forEach(sec => {
       }
       inner += renderExtra(it.extra);
     } else if(it.type === "open") {
-      inner += `<textarea data-id="${it.id}" placeholder="پاسخ خود را بنویسید..."></textarea>`;
+      inner += `<textarea data-id="${it.id}" placeholder="پاسخ خود را بنویسید (دقت و اختصار ارجحیت دارد)..."></textarea>`;
       if(it.wordLimit) inner += `<div class="charcount mono" id="${it.id}_cc">۰ / ${it.wordLimit} کلمه</div>`;
     } else if(it.type === "number") {
-      inner += `<input type="number" class="ans" data-id="${it.id}" placeholder="عدد">`;
+      inner += `<input type="number" class="ans" data-id="${it.id}" placeholder="مثلاً: 5">`;
     }
     q.innerHTML = inner;
     block.appendChild(q);
@@ -408,7 +412,6 @@ const observer = new IntersectionObserver((entries) => {
 }, {rootMargin:"-20% 0px -70% 0px"});
 document.querySelectorAll("section.block").forEach(s => observer.observe(s));
 
-// Focus / Blur Tracking (Red Flag signaling)
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     tabBlurCount++;
@@ -442,10 +445,10 @@ updateProgress();
 function collectOpenQA() {
   const list = [];
   ITEMS.forEach(it => {
-    if(it.type === "open") { list.push({id: it.id, q: it.text.replace(/\n/g," "), a: answers[it.id] || "", minW: it.idealMinWords || 8}); }
+    if(it.type === "open") { list.push({id: it.id, q: it.text.replace(/\n/g," "), a: answers[it.id] || "", minW: it.idealMinWords || 5}); }
     if(it.extra) {
       const val = answers[it.extra.id] || "";
-      if(it.extra.required || val.trim() !== "") list.push({id: it.extra.id, q: `[توضیح تکمیلی سؤال ${qNumber(it.id)}] ${it.extra.label}`, a: val, minW: it.extra.idealMinWords || 8});
+      if(it.extra.required || val.trim() !== "") list.push({id: it.extra.id, q: `[توضیح تکمیلی سؤال ${qNumber(it.id)}] ${it.extra.label}`, a: val, minW: it.extra.idealMinWords || 5});
     }
   });
   return list;
@@ -493,13 +496,15 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
   const missing = [];
   if(!name) missing.push("نام و نام‌خانوادگی");
   if(!age) missing.push("سن");
+  else if (parseInt(age) < 16) missing.push("حداقل سن ۱۶ سال است");
+
   requiredIds().forEach(id => {
     const v = answers[id];
     if(v===undefined || v===null || String(v).trim()==="") { missing.push(id); }
   });
   
   if(missing.length) {
-    missingBox.textContent = "موارد ناتمام: " + missing.join("، ");
+    missingBox.textContent = "موارد ناتمام یا دارای خطا: " + missing.join("، ");
     return;
   }
 
@@ -510,7 +515,7 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     const openQA = collectOpenQA();
     const participantInfo = { name, age, contact };
     
-    // مرحله اول: استخراج متریک‌های خام، طول پاسخ‌ها و خطاهای محاسباتی (لایه ۱)
+    // لایه ۱: استخراج متریک‌های خام و واقعیت‌های سخت (Hard Facts)
     const scorePayload = { 
       action: "score", 
       answers: answers, 
@@ -521,19 +526,19 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     };
     const scoreResponse = await apiCall(scorePayload, "محاسبه واقعیت‌های سخت (لایه ۱)...");
 
-    // مرحله دوم: دریافت تفسیر ساختاریافته مدل هوش مصنوعی با ارائه زمینه‌ی سخت (لایه ۲)
+    // لایه ۲: تحلیل و ارزیابی توسط هوش مصنوعی جمینای
     const aiResponse = await apiCall(
       { action: "gemini", openQA: openQA, hardFacts: scoreResponse.hardFacts },
       "تحلیل ابعاد شناختی توسط هوش مصنوعی (لایه ۲)..."
     );
 
-    // مرحله سوم: تصمیم‌گیری قطعی و تولید پروفایل نهایی در بک‌اند (لایه ۳)
+    // لایه ۳: تصمیم‌گیری و تولید پروفایل نهایی
     const finalizeResponse = await apiCall(
       { action: "finalize", hardFacts: scoreResponse.hardFacts, aiResult: aiResponse, participant: participantInfo, answers: answers },
       "تصمیم‌گیری قطعی و تدوین پروفایل نهایی (لایه ۳)..."
     );
 
-    // مرحله نهایی: ارسال امن به تلگرام (اختیاری بر اساس تنظیمات سرور)
+    // ارسال داده‌ها به ربات تلگرام مدیر سیستم
     await apiCall(
       { action: "telegram", reportText: finalizeResponse.reportText, reportData: finalizeResponse.reportData },
       "در حال ارسال امن داده‌ها به سیستم مرکزی..."
@@ -547,12 +552,29 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     document.getElementById("doneScreen").classList.add("show");
     document.getElementById("doneScreen").scrollIntoView({behavior:"smooth"});
 
+    // دکمه‌های دانلود و کپی کردن نتیجه
     document.getElementById("downloadBtn").onclick = () => {
       const blob = new Blob([finalizeResponse.reportText], {type:"text/plain;charset=utf-8"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url; a.download = `exam-${name.replace(/\s+/g,"_")}.txt`; a.click();
       URL.revokeObjectURL(url);
+    };
+
+    document.getElementById("copyBtn").onclick = () => {
+      try {
+        document.execCommand('copy');
+        navigator.clipboard.writeText(finalizeResponse.reportText);
+        alert("گزارش با موفقیت در کلیپ‌بورد کپی شد.");
+      } catch (err) {
+        // Fallback for iFrame or unsupported environments
+        const textArea = document.createElement("textarea");
+        textArea.value = finalizeResponse.reportText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
     };
 
   } catch(err) {
