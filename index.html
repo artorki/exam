@@ -9,9 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   
-  <!-- بارگذاری سوالات از فایل خارجی -->
-  <script src="questions.js"></script>
-
   <style>
     :root {
       --paper: #ECE7DA;
@@ -40,16 +37,13 @@
     .hidden { display: none !important; }
 
     .shell {
-      display: block; /* تغییر از گرید به بلاک برای حذف ستون سایدبار */
+      display: block;
       max-width: 760px;
       margin: 0 auto;
       padding: 40px 24px 120px;
     }
 
-    /* پنهان‌سازی کامل سایدبار */
-    .rail {
-      display: none !important;
-    }
+    .rail { display: none !important; }
 
     .top {
       padding-top: 8px;
@@ -421,8 +415,8 @@
 
       <div class="submit-zone" id="submitZone">
         <h3>ارسال پاسخ‌ها</h3>
-        <p>نام، سن، رضایت و تمام پاسخ‌های الزامی باید تکمیل شده باشند.</p>
-        <button class="btn btn-primary" id="submitBtn" type="button">ثبت و پردازش پاسخ‌ها</button>
+        <p>نام، سن، رضایت و تمام پاسخ‌های الزامی باید تکمیل شده باشند. (<span id="progressCount">۰</span> از <span id="progressTotal">۰</span>)</p>
+        <button class="btn btn-primary" id="submitBtn" type="button" disabled>در حال ارتباط با سرور...</button>
         <div class="status" id="statusMsg" aria-live="polite"></div>
         <div class="missing-list" id="missingList"></div>
       </div>
@@ -441,7 +435,7 @@
     // Frontend configuration
     // =====================================================================
     const ASSESSMENT_VERSION = "1.3";
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJG4ucEHVtgxeXnPsBac7vTrkuSL1oT1MyoLGoXApLLJEl326hQbfabMogGvpMNvfjlQ/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_IJlAb3534E2cUpekUFIHruMOFF-IAImQ6t6jHwVqwmYhorWlUckOzEp9h2m0GSSQmg/exec";
 
     let sessionToken = null;
     let submissionStarted = false;
@@ -454,66 +448,8 @@
     const itemShownAt = Object.create(null);
     const itemFirstAnswered = Object.create(null);
 
-    // متغیرهای SECTIONS و ITEMS از فایل questions.js بارگذاری شده‌اند و در دسترس هستند.
-    window.ITEMS = window.ITEMS || [];
-    window.SECTIONS = window.SECTIONS || [];
-
-    // =====================================================================
-    // Patching questions.js data based on instructions
-    // =====================================================================
-    (function() {
-      // 4. حذف کامل سوال مربوط به «تغییر باور» (بخش D)
-      let patchedItems = ITEMS.filter(item => item.section !== 'D');
-
-      // 2. اصلاح متن و گزینه‌های سوال ۳ (قضیه بیز / آفت گیاهی)
-      let q3Index = patchedItems.findIndex(item => item.number === 3);
-      if (q3Index !== -1) {
-        patchedItems[q3Index].text = `در یک منطقه، از هر ۱۰۰۰ بوته گیاه، فقط ۱ بوته به یک آفت نادر مبتلا است.
- یک دستگاه تشخیص سریع داریم. این دستگاه آن ۱ بوته بیمار را همیشه درست شناسایی می‌کند؛ اما در بررسی ۹۹۹ بوته سالم، اشتباهاً حدود ۱۰ بوته را نیز بیمار تشخیص می‌دهد.
- اگر دستگاه برای یک بوتهٔ جدید آژیر بکشد (نتیجه مثبت)، احتمال اینکه آن بوته واقعاً بیمار باشد چقدر است؟`;
-        patchedItems[q3Index].options = [
-          "تقریباً ۱۰۰٪ است، چون دستگاه بوته‌های بیمار را همیشه درست شناسایی می‌کند.",
-          "تقریباً ۵۰٪ است، چون خطای دستگاه و دقت آن با هم برابرند.",
-          "کمتر از ۱۰٪ است، چون تعداد خطاهای دستگاه در جمعیت سالم، از کل بوته‌های بیمار بیشتر است.",
-          "قابل‌برآورد نیست، چون به اطلاعات بیشتری نیاز داریم."
-        ];
-        // در صورت وجود کلید پاسخ صحیح در آبجکت، آن را به‌روزرسانی می‌کنیم (ایندکس ۲ یعنی گزینه سوم)
-        if (patchedItems[q3Index].answer !== undefined) {
-          patchedItems[q3Index].answer = 2;
-        }
-      }
-
-      // 3. افزودن سوال جدید «انتقال الگو / انتزاع تصویری» (بخش C)
-      const newQ = {
-        id: "q_pattern_visual",
-        section: "C",
-        type: "open",
-        text: `شما در حال کار با یک ابزار پردازش تصویر هستید که یک قانون ثابت برای تبدیل تصاویر دارد:
- • یک «منظرهٔ شلوغ رنگ‌روغن با رنگ‌های گرم» را به یک «طرح مداد گرافیتیِ خلوت، با تمرکز روی یک درخت و در پس‌زمینهٔ سفید» تبدیل می‌کند.
- • یک «نورد حماسی و پر از فیگور با تکنیک آبرنگ» را به یک «طرح مداد گرافیتیِ خلوت، با تمرکز روی سلاحِ یک جنگجو در پس‌زمینهٔ سفید» تبدیل می‌کند.
- اگر ورودی شما یک «پرترهٔ شلوغ و درهم‌تنیده از چهرهٔ یک پیرمرد با تکنیک رنگ‌روغن» باشد، بر اساس قانون پنهان این سیستم، خروجی چه ویژگی‌های ساختاری‌ای خواهد داشت؟ دقیقاً توضیح دهید.`,
-        wordLimit: 150,
-        idealMinWords: 10
-      };
-
-      // درج سوال جدید بعد از آخرین آیم بخش C
-      let lastCIndex = patchedItems.map(i => i.section).lastIndexOf('C');
-      if (lastCIndex !== -1) {
-        patchedItems.splice(lastCIndex + 1, 0, newQ);
-      } else {
-        patchedItems.push(newQ);
-      }
-
-      // 1. شماره‌گذاری پیوسته (سوال ۱، سوال ۲ و...)
-      let counter = 1;
-      patchedItems.forEach(item => {
-        if (item.type !== 'info') {
-          item.number = counter++;
-        }
-      });
-
-      window.ITEMS = patchedItems;
-    })();
+    // Single Source of Truth: Items are loaded entirely from backend
+    window.ITEMS = [];
 
     // =====================================================================
     // Utilities
@@ -641,7 +577,6 @@
     }
 
     function renderAssessment() {
-      // حذف هدرهای بخش‌ها و نمایش یکپارچه و متوالی سوالات
       ITEMS.forEach(item => {
         const block = document.createElement("section");
         block.className = "block";
@@ -650,8 +585,6 @@
         formRoot.appendChild(block);
       });
     }
-
-    renderAssessment();
 
     // =====================================================================
     // Interaction & process tracking
@@ -716,9 +649,6 @@
       }
     }, { rootMargin: "-10% 0px -65% 0px" });
 
-    document.querySelectorAll("section.block").forEach(section => sectionObserver.observe(section));
-    document.querySelectorAll("[data-item-id]").forEach(item => itemObserver.observe(item));
-
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         tabBlurCount += 1;
@@ -734,14 +664,10 @@
       const done = required.filter(id => normalizeAnswerValue(answers[id]) !== "");
       const progressCount = document.getElementById("progressCount");
       const progressTotal = document.getElementById("progressTotal");
-      const progressFill = document.getElementById("progressFill");
       
       if (progressCount) progressCount.textContent = done.length.toLocaleString("fa-IR");
       if (progressTotal) progressTotal.textContent = required.length.toLocaleString("fa-IR");
-      if (progressFill) progressFill.style.width = `${required.length ? (done.length / required.length) * 100 : 0}%`;
     }
-
-    updateProgress();
 
     // =====================================================================
     // Backend communication
@@ -760,8 +686,34 @@
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
+        if (data.error) throw new Error(data.error.message || "خطای سرور");
         if (!data.token) throw new Error("نشست معتبر از سرور دریافت نشد.");
+        
         sessionToken = data.token;
+        
+        // Single Source of Truth Logic: Build from Server payload
+        if (data.assessmentData && data.assessmentData.items) {
+           const itemsObj = data.assessmentData.items;
+           // Sort correctly by order field configured on backend
+           window.ITEMS = Object.keys(itemsObj)
+             .map(k => itemsObj[k])
+             .sort((a, b) => (a.order || 99) - (b.order || 99));
+
+           // Generate all elements dynamically
+           renderAssessment();
+           
+           // Start observing intersection for tracking
+           document.querySelectorAll("section.block").forEach(section => sectionObserver.observe(section));
+           document.querySelectorAll("[data-item-id]").forEach(item => itemObserver.observe(item));
+           
+           // Allow submit button to be clickable
+           const submitBtn = document.getElementById("submitBtn");
+           submitBtn.disabled = false;
+           submitBtn.textContent = "ثبت و پردازش پاسخ‌ها";
+           updateProgress();
+        } else {
+           throw new Error("ساختار سوالات از سرور به درستی دریافت نشد.");
+        }
       } catch (error) {
         console.error("خطا در ارتباط اولیه با سرور:", error);
         setStatus("ارتباط اولیه با سرور برقرار نشد. صفحه را تازه‌سازی کنید.", "err");
@@ -861,7 +813,7 @@
           missing.push("سن معتبر (۱۶ تا ۱۰۰ سال)");
         }
       }
-      if (!consent) missing.push("تأیید رضایت و اطلاع از نحوهٔ پردازش داده‌ها");
+      if (!consent) missing.push("تأیید رضایت");
 
       for (const id of requiredIds()) {
         if (normalizeAnswerValue(answers[id]) === "") {
@@ -909,7 +861,6 @@
         const timings = collectTimings();
         const participant = { name, age, contact };
 
-        // Layer 1: server-side objective scoring / hard facts.
         const scoreResponse = await apiCall({
           action: "score",
           answers: { ...answers },
@@ -922,14 +873,12 @@
           }
         }, "در حال ثبت واقعیت‌های عملکردی آزمون...");
 
-        // Layer 2: rubric-based qualitative analysis.
         const aiResponse = await apiCall({
           action: "gemini",
           openQA,
           hardFacts: scoreResponse.hardFacts
         }, "در حال ارزیابی پاسخ‌های تشریحی بر اساس rubric...");
 
-        // Layer 3: deterministic finalization on the server.
         const finalizeResponse = await apiCall({
           action: "finalize",
           hardFacts: scoreResponse.hardFacts,
@@ -937,7 +886,6 @@
           participant
         }, "در حال نهایی‌سازی پروفایل ارزیابی...");
 
-        // Admin notification / central delivery.
         await apiCall({
           action: "telegram",
           reportText: finalizeResponse.reportText,
