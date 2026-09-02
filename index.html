@@ -40,82 +40,15 @@
     .hidden { display: none !important; }
 
     .shell {
-      display: grid;
-      grid-template-columns: 220px minmax(0, 760px);
-      justify-content: center;
-      gap: 48px;
-      max-width: 1080px;
+      display: block; /* تغییر از گرید به بلاک برای حذف ستون سایدبار */
+      max-width: 760px;
       margin: 0 auto;
       padding: 40px 24px 120px;
     }
 
-    @media (max-width: 880px) {
-      .shell {
-        grid-template-columns: 1fr;
-        padding: 24px 16px 90px;
-      }
-      .rail { display: none; }
-    }
-
+    /* پنهان‌سازی کامل سایدبار */
     .rail {
-      position: sticky;
-      top: 40px;
-      align-self: start;
-      height: fit-content;
-    }
-    .rail-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: .12em;
-      color: var(--ink-soft);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-    }
-    .rail-item {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      padding: 6px 0;
-      font-size: 13px;
-      color: var(--ink-soft);
-      border-right: 2px solid transparent;
-      padding-right: 12px;
-      margin-right: -12px;
-      cursor: pointer;
-      transition: color .2s, border-color .2s;
-    }
-    .rail-item .code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--ink-soft);
-    }
-    .rail-item.active {
-      color: var(--ink);
-      border-color: var(--accent);
-      font-weight: 600;
-    }
-    .rail-item.active .code { color: var(--accent); }
-    .rail-progress {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--ink-soft);
-    }
-    .rail-bar {
-      height: 3px;
-      background: var(--line);
-      margin-top: 8px;
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius);
-    }
-    .rail-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width .3s;
+      display: none !important;
     }
 
     .top {
@@ -214,33 +147,6 @@
     section.block {
       margin-bottom: 64px;
       scroll-margin-top: 40px;
-    }
-    .block-head {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-    .block-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .block-title {
-      font-size: 19px;
-      font-weight: 700;
-    }
-    .block-weight {
-      margin-right: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--ink-soft);
-    }
-    .block-desc {
-      font-size: 13.5px;
-      color: var(--ink-soft);
-      margin-bottom: 28px;
     }
 
     .q {
@@ -466,15 +372,6 @@
 </head>
 <body>
   <div class="shell">
-    <nav class="rail" id="rail" aria-label="بخش‌های آزمون">
-      <div class="rail-title">بخش‌ها</div>
-      <div id="railList"></div>
-      <div class="rail-progress">
-        پاسخ داده‌شده: <span id="progressCount">0</span> / <span id="progressTotal">0</span>
-        <div class="rail-bar"><div class="rail-bar-fill" id="progressFill"></div></div>
-      </div>
-    </nav>
-
     <main>
       <div class="top">
         <div class="eyebrow">Cognitive & Analytical Assessment</div>
@@ -558,6 +455,65 @@
     const itemFirstAnswered = Object.create(null);
 
     // متغیرهای SECTIONS و ITEMS از فایل questions.js بارگذاری شده‌اند و در دسترس هستند.
+    window.ITEMS = window.ITEMS || [];
+    window.SECTIONS = window.SECTIONS || [];
+
+    // =====================================================================
+    // Patching questions.js data based on instructions
+    // =====================================================================
+    (function() {
+      // 4. حذف کامل سوال مربوط به «تغییر باور» (بخش D)
+      let patchedItems = ITEMS.filter(item => item.section !== 'D');
+
+      // 2. اصلاح متن و گزینه‌های سوال ۳ (قضیه بیز / آفت گیاهی)
+      let q3Index = patchedItems.findIndex(item => item.number === 3);
+      if (q3Index !== -1) {
+        patchedItems[q3Index].text = `در یک منطقه، از هر ۱۰۰۰ بوته گیاه، فقط ۱ بوته به یک آفت نادر مبتلا است.
+ یک دستگاه تشخیص سریع داریم. این دستگاه آن ۱ بوته بیمار را همیشه درست شناسایی می‌کند؛ اما در بررسی ۹۹۹ بوته سالم، اشتباهاً حدود ۱۰ بوته را نیز بیمار تشخیص می‌دهد.
+ اگر دستگاه برای یک بوتهٔ جدید آژیر بکشد (نتیجه مثبت)، احتمال اینکه آن بوته واقعاً بیمار باشد چقدر است؟`;
+        patchedItems[q3Index].options = [
+          "تقریباً ۱۰۰٪ است، چون دستگاه بوته‌های بیمار را همیشه درست شناسایی می‌کند.",
+          "تقریباً ۵۰٪ است، چون خطای دستگاه و دقت آن با هم برابرند.",
+          "کمتر از ۱۰٪ است، چون تعداد خطاهای دستگاه در جمعیت سالم، از کل بوته‌های بیمار بیشتر است.",
+          "قابل‌برآورد نیست، چون به اطلاعات بیشتری نیاز داریم."
+        ];
+        // در صورت وجود کلید پاسخ صحیح در آبجکت، آن را به‌روزرسانی می‌کنیم (ایندکس ۲ یعنی گزینه سوم)
+        if (patchedItems[q3Index].answer !== undefined) {
+          patchedItems[q3Index].answer = 2;
+        }
+      }
+
+      // 3. افزودن سوال جدید «انتقال الگو / انتزاع تصویری» (بخش C)
+      const newQ = {
+        id: "q_pattern_visual",
+        section: "C",
+        type: "open",
+        text: `شما در حال کار با یک ابزار پردازش تصویر هستید که یک قانون ثابت برای تبدیل تصاویر دارد:
+ • یک «منظرهٔ شلوغ رنگ‌روغن با رنگ‌های گرم» را به یک «طرح مداد گرافیتیِ خلوت، با تمرکز روی یک درخت و در پس‌زمینهٔ سفید» تبدیل می‌کند.
+ • یک «نورد حماسی و پر از فیگور با تکنیک آبرنگ» را به یک «طرح مداد گرافیتیِ خلوت، با تمرکز روی سلاحِ یک جنگجو در پس‌زمینهٔ سفید» تبدیل می‌کند.
+ اگر ورودی شما یک «پرترهٔ شلوغ و درهم‌تنیده از چهرهٔ یک پیرمرد با تکنیک رنگ‌روغن» باشد، بر اساس قانون پنهان این سیستم، خروجی چه ویژگی‌های ساختاری‌ای خواهد داشت؟ دقیقاً توضیح دهید.`,
+        wordLimit: 150,
+        idealMinWords: 10
+      };
+
+      // درج سوال جدید بعد از آخرین آیم بخش C
+      let lastCIndex = patchedItems.map(i => i.section).lastIndexOf('C');
+      if (lastCIndex !== -1) {
+        patchedItems.splice(lastCIndex + 1, 0, newQ);
+      } else {
+        patchedItems.push(newQ);
+      }
+
+      // 1. شماره‌گذاری پیوسته (سوال ۱، سوال ۲ و...)
+      let counter = 1;
+      patchedItems.forEach(item => {
+        if (item.type !== 'info') {
+          item.number = counter++;
+        }
+      });
+
+      window.ITEMS = patchedItems;
+    })();
 
     // =====================================================================
     // Utilities
@@ -609,7 +565,6 @@
     // Rendering
     // =====================================================================
     const formRoot = document.getElementById("formRoot");
-    const railList = document.getElementById("railList");
 
     function renderExtra(extra, itemId) {
       return `
@@ -674,7 +629,7 @@
         inner += renderConfidence(item);
         if (item.extra) inner += renderExtra(item.extra, item.id);
       } else if (item.type === "open") {
-        inner += `<textarea data-id="${item.id}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه."></textarea>`;
+        inner += `<textarea id="${item.id}" data-id="${item.id}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه."></textarea>`;
         if (item.wordLimit) inner += `<div class="charcount" id="${item.id}_cc">۰ / ${item.wordLimit} کلمه</div>`;
       } else if (item.type === "number") {
         inner += `<input type="number" class="ans" data-id="${item.id}" inputmode="numeric" autocomplete="off" placeholder="مثلاً: 7">`;
@@ -686,32 +641,13 @@
     }
 
     function renderAssessment() {
-      SECTIONS.forEach(section => {
+      // حذف هدرهای بخش‌ها و نمایش یکپارچه و متوالی سوالات
+      ITEMS.forEach(item => {
         const block = document.createElement("section");
         block.className = "block";
-        block.id = `sec-${section.code}`;
-        block.innerHTML = `
-          <div class="block-head">
-            <span class="block-code">بخش ${section.code}</span>
-            <span class="block-title">${escapeHtml(section.title)}</span>
-            <span class="block-weight">${escapeHtml(section.weight)}</span>
-          </div>
-          <div class="block-desc">${escapeHtml(section.desc)}</div>
-        `;
-
-        for (const item of ITEMS.filter(it => it.section === section.code)) {
-          block.insertAdjacentHTML("beforeend", renderItem(item));
-        }
+        block.id = `sec-${item.id}`;
+        block.innerHTML = renderItem(item);
         formRoot.appendChild(block);
-
-        const railItem = document.createElement("div");
-        railItem.className = "rail-item";
-        railItem.dataset.target = `sec-${section.code}`;
-        railItem.innerHTML = `<span class="code mono">${section.code}</span><span>${escapeHtml(section.title)}</span>`;
-        railItem.addEventListener("click", () => {
-          document.getElementById(`sec-${section.code}`).scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-        railList.appendChild(railItem);
       });
     }
 
@@ -766,11 +702,8 @@
     const sectionObserver = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        document.querySelectorAll(".rail-item").forEach(item => item.classList.remove("active"));
-        const match = document.querySelector(`.rail-item[data-target="${entry.target.id}"]`);
-        if (match) match.classList.add("active");
-        const sectionCode = entry.target.id.replace("sec-", "");
-        if (!sectionFirstSeen[sectionCode]) sectionFirstSeen[sectionCode] = Date.now();
+        const itemId = entry.target.id.replace("sec-", "");
+        if (!sectionFirstSeen[itemId]) sectionFirstSeen[itemId] = Date.now();
       }
     }, { rootMargin: "-20% 0px -70% 0px" });
 
@@ -799,9 +732,13 @@
     function updateProgress() {
       const required = requiredIds();
       const done = required.filter(id => normalizeAnswerValue(answers[id]) !== "");
-      document.getElementById("progressCount").textContent = done.length.toLocaleString("fa-IR");
-      document.getElementById("progressTotal").textContent = required.length.toLocaleString("fa-IR");
-      document.getElementById("progressFill").style.width = `${required.length ? (done.length / required.length) * 100 : 0}%`;
+      const progressCount = document.getElementById("progressCount");
+      const progressTotal = document.getElementById("progressTotal");
+      const progressFill = document.getElementById("progressFill");
+      
+      if (progressCount) progressCount.textContent = done.length.toLocaleString("fa-IR");
+      if (progressTotal) progressTotal.textContent = required.length.toLocaleString("fa-IR");
+      if (progressFill) progressFill.style.width = `${required.length ? (done.length / required.length) * 100 : 0}%`;
     }
 
     updateProgress();
