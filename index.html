@@ -436,12 +436,8 @@
     const itemShownAt = Object.create(null);
     const itemFirstAnswered = Object.create(null);
 
-    // Single Source of Truth: Items are loaded entirely from backend
     window.ITEMS = [];
 
-    // =====================================================================
-    // Utilities
-    // =====================================================================
     function wordCount(text) {
       if (!text) return 0;
       return text.trim().split(/\s+/).filter(Boolean).length;
@@ -485,9 +481,6 @@
         .replace(/'/g, "&#039;");
     }
 
-    // =====================================================================
-    // Rendering
-    // =====================================================================
     const formRoot = document.getElementById("formRoot");
 
     function renderExtra(extra, itemId) {
@@ -574,9 +567,6 @@
       });
     }
 
-    // =====================================================================
-    // Interaction & process tracking
-    // =====================================================================
     function markAnswered(id, value) {
       answers[id] = value;
       if (!itemFirstAnswered[id] && normalizeAnswerValue(value) !== "") {
@@ -657,9 +647,6 @@
       if (progressTotal) progressTotal.textContent = required.length.toLocaleString("fa-IR");
     }
 
-    // =====================================================================
-    // Backend communication
-    // =====================================================================
     window.addEventListener("DOMContentLoaded", async () => {
       try {
         const response = await fetch(GAS_WEB_APP_URL, {
@@ -679,22 +666,17 @@
         
         sessionToken = data.token;
         
-        // Single Source of Truth Logic: Build from Server payload
         if (data.assessmentData && data.assessmentData.items) {
            const itemsObj = data.assessmentData.items;
-           // Sort correctly by order field configured on backend
            window.ITEMS = Object.keys(itemsObj)
              .map(k => itemsObj[k])
              .sort((a, b) => (a.order || 99) - (b.order || 99));
 
-           // Generate all elements dynamically
            renderAssessment();
            
-           // Start observing intersection for tracking
            document.querySelectorAll("section.block").forEach(section => sectionObserver.observe(section));
            document.querySelectorAll("[data-item-id]").forEach(item => itemObserver.observe(item));
            
-           // Allow submit button to be clickable
            const submitBtn = document.getElementById("submitBtn");
            submitBtn.disabled = false;
            submitBtn.textContent = "ثبت و پردازش پاسخ‌ها";
@@ -733,9 +715,6 @@
       return data;
     }
 
-    // =====================================================================
-    // Validation & payload creation
-    // =====================================================================
     function collectOpenQA() {
       const list = [];
       for (const item of ITEMS) {
@@ -790,7 +769,6 @@
       const missing = [];
       const name = document.getElementById("pName").value.trim();
       const age = document.getElementById("pAge").value.trim();
-      const consent = document.getElementById("consent").checked;
 
       if (!name) missing.push("نام و نام‌خانوادگی");
       if (!age) {
@@ -798,10 +776,9 @@
       } else {
         const parsedAge = parseInt(age, 10);
         if (!Number.isFinite(parsedAge) || parsedAge < 16 || parsedAge > 100) {
-          missing.push("سن معتبر (۱۶ تا ۱۰۰ سال)");
+          missing.push("سن معتبر (16 تا 30 سال)");
         }
       }
-      if (!consent) missing.push("تأیید رضایت");
 
       for (const id of requiredIds()) {
         if (normalizeAnswerValue(answers[id]) === "") {
@@ -817,12 +794,8 @@
         }
       }
 
-      return { valid: missing.length === 0, missing, name, age, consent };
     }
 
-    // =====================================================================
-    // Submission workflow
-    // =====================================================================
     document.getElementById("submitBtn").addEventListener("click", async () => {
       if (submissionStarted) return;
 
@@ -893,3 +866,4 @@
   </script>
 </body>
 </html>
+
