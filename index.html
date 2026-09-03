@@ -440,12 +440,44 @@
     let totalBlurTimeSec = 0;
     let lastBlurTime = 0;
 
+    // Idempotency state pipeline
+    let pipelineStage = "score"; 
+    let pipelinePayload = {};
+
     const answers = Object.create(null);
     const sectionFirstSeen = Object.create(null);
     const itemShownAt = Object.create(null);
     const itemFirstAnswered = Object.create(null);
 
+    // --- Fix 1: LocalStorage Data Initialization ---
+    try {
+      const draftStr = localStorage.getItem("qprime_draft");
+      if (draftStr) {
+        const draft = JSON.parse(draftStr);
+        // Expire draft after 12 hours
+        if (draft.savedAt && (Date.now() - draft.savedAt < 12 * 60 * 60 * 1000)) {
+          Object.assign(answers, draft.answers || {});
+          Object.assign(sectionFirstSeen, draft.sectionFirstSeen || {});
+          Object.assign(itemShownAt, draft.itemShownAt || {});
+          Object.assign(itemFirstAnswered, draft.itemFirstAnswered || {});
+          tabBlurCount = draft.tabBlurCount || 0;
+          totalBlurTimeSec = draft.totalBlurTimeSec || 0;
+        } else {
+          localStorage.removeItem("qprime_draft");
+        }
+      }
+    } catch (e) { /* Ignore parsing/quota issues */ }
+
     window.ITEMS = [];
+
+    function persistLocal() {
+      try {
+        localStorage.setItem("qprime_draft", JSON.stringify({
+          answers, sectionFirstSeen, itemShownAt, itemFirstAnswered,
+          tabBlurCount, totalBlurTimeSec, savedAt: Date.now()
+        }));
+      } catch (e) { /* quota or privacy mode - ignore silently */ }
+    }
 
     function wordCount(text) {
       if (!text) return 0;
@@ -494,10 +526,11 @@
     const formRoot = document.getElementById("formRoot");
 
     function renderExtra(extra, itemId) {
+      const ansVal = answers[extra.id] !== undefined ? escapeHtml(answers[extra.id]) : '';
       return `
         <div class="extra-field">
           <label for="${extra.id}">${escapeHtml(extra.label)}</label>
-          <textarea id="${extra.id}" data-id="${extra.id}" data-parent-id="${itemId}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه."></textarea>
+          <textarea id="${extra.id}" data-id="${extra.id}" data-parent-id="${itemId}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه.">${ansVal}</textarea>
           ${extra.wordLimit ? `<div class="charcount" id="${extra.id}_cc">۰ / ${extra.wordLimit} کلمه</div>` : ""}
         </div>
       `;
@@ -505,16 +538,17 @@
 
     function renderConfidence(item) {
       if (!item.hasConf) return "";
+      const confVal = String(answers[item.id + '_conf'] || '');
       return `
         <div class="conf-row">
           <label for="${item.id}_conf">سطح اطمینان از پاسخ:</label>
           <select id="${item.id}_conf" data-id="${item.id}_conf">
             <option value="">— انتخاب کنید —</option>
-            <option value="1">۱ (کمتر از ۵۰٪)</option>
-            <option value="2">۲ (۵۰–۶۹٪)</option>
-            <option value="3">۳ (۷۰–۸۴٪)</option>
-            <option value="4">۴ (۸۵–۹۴٪)</option>
-            <option value="5">۵ (۹۵٪ یا بیشتر)</option>
+            <option value="1" ${confVal === "1" ? "selected" : ""}>۱ (کمتر از ۵۰٪)</option>
+            <option value="2" ${confVal === "2" ? "selected" : ""}>۲ (۵۰–۶۹٪)</option>
+            <option value="3" ${confVal === "3" ? "selected" : ""}>۳ (۷۰–۸۴٪)</option>
+            <option value="4" ${confVal === "4" ? "selected" : ""}>۴ (۸۵–۹۴٪)</option>
+            <option value="5" ${confVal === "5" ? "selected" : ""}>۵ (۹۵٪ یا بیشتر)</option>
           </select>
         </div>
       `;
@@ -546,9 +580,10 @@
 
         inner += `<div class="options" data-id="${item.id}">`;
         for (const opt of randomized) {
+          const isChecked = answers[item.id] === opt.index;
           inner += `
-            <label class="opt" data-original-idx="${opt.index}">
-              <input type="radio" name="${item.id}" value="${opt.index}">
+            <label class="opt ${isChecked ? 'checked' : ''}" data-original-idx="${opt.index}">
+              <input type="radio" name="${item.id}" value="${opt.index}" ${isChecked ? 'checked' : ''}>
               <span>${escapeHtml(opt.value)}</span>
             </label>
           `;
@@ -557,10 +592,15 @@
         inner += renderConfidence(item);
         if (item.extra) inner += renderExtra(item.extra, item.id);
       } else if (item.type === "open") {
-        inner += `<textarea id="${item.id}" data-id="${item.id}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه."></textarea>`;
+        const ansVal = answers[item.id] !== undefined ? escapeHtml(answers[item.id]) : '';
+        inner += `<textarea id="${item.id}" data-id="${item.id}" placeholder="می‌تونه bullet-point، جملات کوتاه یا حتی طرح‌واره باشه — فقط استدلال باید کامل و قابل‌ردیابی باشه.">${ansVal}</textarea>`;
         if (item.wordLimit) inner += `<div class="charcount" id="${item.id}_cc">۰ / ${item.wordLimit} کلمه</div>`;
       } else if (item.type === "number") {
-        inner += `<input type="number" class="ans" data-id="${item.id}" inputmode="numeric" autocomplete="off" placeholder="مثلاً: 7">`;
+        // Fix 7: Added dynamic min and max for number validation
+        const ansVal = answers[item.id] !== undefined ? escapeHtml(answers[item.id]) : '';
+        const minAttr = item.min !== undefined ? `min="${item.min}"` : "";
+        const maxAttr = item.max !== undefined ? `max="${item.max}"` : "";
+        inner += `<input type="number" class="ans" data-id="${item.id}" ${minAttr} ${maxAttr} inputmode="numeric" autocomplete="off" placeholder="مثلاً: 7" value="${ansVal}">`;
         inner += renderConfidence(item);
       }
 
@@ -576,6 +616,17 @@
         block.innerHTML = renderItem(item);
         formRoot.appendChild(block);
       });
+      
+      // Init char count hints for drafts
+      document.querySelectorAll("textarea").forEach(ta => {
+        const cc = document.getElementById(`${ta.dataset.id}_cc`);
+        const limit = wordLimitOf(ta.dataset.id);
+        if (cc && limit && ta.value) {
+          const count = wordCount(ta.value);
+          cc.textContent = `${count.toLocaleString("fa-IR")} / ${limit} کلمه`;
+          cc.classList.toggle("warn", count > limit);
+        }
+      });
     }
 
     function markAnswered(id, value) {
@@ -584,6 +635,7 @@
         itemFirstAnswered[id] = Date.now();
       }
       updateProgress();
+      persistLocal(); // Fix 1
     }
 
     formRoot.addEventListener("change", event => {
@@ -608,7 +660,12 @@
       const target = event.target;
       if (!(target.tagName === "TEXTAREA" || (target.tagName === "INPUT" && target.type === "number"))) return;
 
-      markAnswered(target.dataset.id, target.value);
+      let value = target.value;
+      // Fix 4: Number type consistency
+      if (target.type === "number") {
+        value = value === "" ? "" : Number(value);
+      }
+      markAnswered(target.dataset.id, value);
 
       if (target.tagName === "TEXTAREA") {
         const cc = document.getElementById(`${target.dataset.id}_cc`);
@@ -629,6 +686,7 @@
       }
     }, { rootMargin: "-20% 0px -70% 0px" });
 
+    // Fix 10: Adjusted IntersectionObserver margin for tall blocks
     const itemObserver = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
@@ -636,15 +694,17 @@
           if (id && !itemShownAt[id]) itemShownAt[id] = Date.now();
         }
       }
-    }, { rootMargin: "-10% 0px -65% 0px" });
+    }, { rootMargin: "-10% 0px -40% 0px" });
 
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         tabBlurCount += 1;
         lastBlurTime = Date.now();
+        persistLocal(); // Extra safe persist
       } else if (lastBlurTime > 0) {
         totalBlurTimeSec += Math.max(0, Math.round((Date.now() - lastBlurTime) / 1000));
         lastBlurTime = 0;
+        persistLocal();
       }
     });
 
@@ -658,7 +718,10 @@
       if (progressTotal) progressTotal.textContent = required.length.toLocaleString("fa-IR");
     }
 
-    window.addEventListener("DOMContentLoaded", async () => {
+    // --- Fix 3: Re-Init Session on Expiration ---
+    async function reinitSession() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       try {
         const response = await fetch(GAS_WEB_APP_URL, {
           method: "POST",
@@ -667,10 +730,52 @@
             action: "init",
             assessmentVersion: ASSESSMENT_VERSION,
             clientHost: window.location.hostname
-          })
+          }),
+          signal: controller.signal
         });
+        if (!response.ok) throw new Error(`خطای ارتباطی HTTP ${response.status}`);
+        const text = await response.text();
+        const data = JSON.parse(text);
+        if (data.error) {
+           const msg = typeof data.error === "string" ? data.error : (data.error.message || "خطای سرور در تمدید نشست");
+           throw new Error(msg);
+        }
+        if (!data.token) throw new Error("نشست معتبر از سرور دریافت نشد.");
+        sessionToken = data.token;
+      } catch (err) {
+        if (err.name === "AbortError") throw new Error("سرور در تمدید نشست پاسخ نداد.");
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        
+        let response;
+        try {
+          response = await fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              action: "init",
+              assessmentVersion: ASSESSMENT_VERSION,
+              clientHost: window.location.hostname
+            }),
+            signal: controller.signal
+          });
+        } catch (err) {
+          if (err.name === "AbortError") throw new Error("سرور در زمان مناسب پاسخ نداد.");
+          throw err;
+        } finally {
+          clearTimeout(timeoutId);
+        }
+
+        if (!response.ok) throw new Error(`خطای ارتباطی HTTP ${response.status}`); // Fix 11
+        
         const responseText = await response.text();
         let data;
         try {
@@ -708,7 +813,7 @@
       }
     });
 
-    async function apiCall(payload, statusText) {
+    async function apiCall(payload, statusText, _retried = false) {
       setStatus(`<span class="spinner"></span>${escapeHtml(statusText)}`, "info");
 
       if (!sessionToken) {
@@ -721,15 +826,25 @@
         sessionToken
       };
 
+      // Fix 5: Fetch AbortController Timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s limit
+
       let response;
       try {
         response = await fetch(GAS_WEB_APP_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
+          signal: controller.signal
         });
       } catch (err) {
+        if (err.name === "AbortError") {
+          throw new Error("سرور در زمان مناسب پاسخ نداد. لطفاً دوباره تلاش کنید.");
+        }
         throw new Error("خطا در برقراری ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.");
+      } finally {
+        clearTimeout(timeoutId);
       }
 
       if (!response.ok) throw new Error(`خطای ارتباطی HTTP ${response.status}`);
@@ -742,7 +857,15 @@
         throw new Error("پاسخ دریافتی از سرور معتبر نیست.");
       }
 
-      if (data.error) throw new Error(data.error.message || "خطای سرور");
+      // Fix 3 & Fix 6: Expiration handling & exact error mapping
+      if (data.error) {
+        const errMsg = typeof data.error === "string" ? data.error : (data.error.message || "خطای سرور");
+        if (!_retried && /session|token|توکن|نشست/i.test(data.error.code || errMsg)) {
+          await reinitSession();
+          return apiCall(payload, statusText, true);
+        }
+        throw new Error(errMsg);
+      }
       return data;
     }
 
@@ -752,14 +875,14 @@
         if (item.type !== "open") continue;
         list.push({
           id: item.id,
-          a: (answers[item.id] || "").trim(),
+          a: String(answers[item.id] || "").trim(),
           minW: item.idealMinWords || 5
         });
       }
 
       for (const item of ITEMS) {
         if (!item.extra) continue;
-        const value = (answers[item.extra.id] || "").trim();
+        const value = String(answers[item.extra.id] || "").trim();
         if (item.extra.required || value !== "") {
           list.push({
             id: item.extra.id,
@@ -817,7 +940,9 @@
 
       for (const id of requiredIds()) {
         const strId = String(id);
-        if (normalizeAnswerValue(answers[id]) === "") {
+        const val = normalizeAnswerValue(answers[id]);
+        
+        if (val === "") {
           if (strId.endsWith("_conf")) {
             const baseId = strId.slice(0, -5);
             const item = ITEMS.find(it => String(it.id) === baseId);
@@ -832,6 +957,18 @@
                 missing.push(`توضیحات سؤال ${parentItem.number}`);
               } else {
                 missing.push(strId);
+              }
+            }
+          }
+        } else {
+          // Fix 7: Client-side bounds validation for numbers
+          if (!strId.endsWith("_conf")) {
+            const mainItem = ITEMS.find(it => String(it.id) === strId);
+            if (mainItem && mainItem.type === "number") {
+              const numVal = Number(answers[id]);
+              if ((mainItem.min !== undefined && numVal < mainItem.min) ||
+                  (mainItem.max !== undefined && numVal > mainItem.max)) {
+                missing.push(`مقدار مجاز برای سؤال ${mainItem.number} (${mainItem.min} تا ${mainItem.max})`);
               }
             }
           }
@@ -867,59 +1004,96 @@
       const age = validation.age;
       const contact = document.getElementById("pContact").value.trim();
 
-      // محاسبه دقیق آخرین زمان عدم تمرکز
       let finalBlurTime = totalBlurTimeSec;
       if (lastBlurTime > 0) {
         finalBlurTime += Math.max(0, Math.round((Date.now() - lastBlurTime) / 1000));
       }
 
       try {
-        const openQA = collectOpenQA();
-        const timings = collectTimings();
-        const participant = { name, age, contact };
+        // Fix 2: Stateful API processing pipeline
+        if (pipelineStage === "score") {
+          pipelinePayload.openQA = collectOpenQA();
+          pipelinePayload.timings = collectTimings();
+          pipelinePayload.participant = { name, age, contact };
 
-        const scoreResponse = await apiCall({
-          action: "score",
-          answers: { ...answers },
-          timings,
-          openQA,
-          participant,
-          tabTracking: {
-            blurCount: tabBlurCount,
-            totalBlurTime: finalBlurTime
+          // Fix 8: Strip long descriptive answers out of the answers object
+          const closedAnswers = {};
+          for (const key in answers) {
+            let isOpen = false;
+            for (const it of ITEMS) {
+              if (it.type === "open" && String(it.id) === key) isOpen = true;
+              if (it.extra && String(it.extra.id) === key) isOpen = true;
+            }
+            if (!isOpen) closedAnswers[key] = answers[key];
           }
-        }, "در حال ثبت واقعیت‌های عملکردی آزمون...");
 
-        const aiResponse = await apiCall({
-          action: "gemini",
-          openQA,
-          hardFacts: scoreResponse.hardFacts
-        }, "در حال ارزیابی پاسخ‌های تشریحی بر اساس rubric...");
+          pipelinePayload.scoreResponse = await apiCall({
+            action: "score",
+            answers: closedAnswers,
+            timings: pipelinePayload.timings,
+            openQA: pipelinePayload.openQA,
+            participant: pipelinePayload.participant,
+            tabTracking: {
+              blurCount: tabBlurCount,
+              totalBlurTime: finalBlurTime
+            }
+          }, "در حال ثبت واقعیت‌های عملکردی آزمون...");
+          
+          pipelineStage = "gemini";
+        }
 
-        const finalizeResponse = await apiCall({
-          action: "finalize",
-          hardFacts: scoreResponse.hardFacts,
-          aiResult: aiResponse,
-          participant
-        }, "در حال نهایی‌سازی پروفایل ارزیابی...");
+        if (pipelineStage === "gemini") {
+          pipelinePayload.aiResponse = await apiCall({
+            action: "gemini",
+            openQA: pipelinePayload.openQA,
+            hardFacts: pipelinePayload.scoreResponse.hardFacts
+          }, "در حال ارزیابی پاسخ‌های تشریحی بر اساس rubric...");
+          
+          pipelineStage = "finalize";
+        }
 
-        await apiCall({
-          action: "telegram",
-          reportText: finalizeResponse.reportText,
-          reportData: finalizeResponse.reportData
-        }, "در حال ثبت نتیجه در سیستم مرکزی...");
+        if (pipelineStage === "finalize") {
+          pipelinePayload.finalizeResponse = await apiCall({
+            action: "finalize",
+            hardFacts: pipelinePayload.scoreResponse.hardFacts,
+            aiResult: pipelinePayload.aiResponse,
+            participant: pipelinePayload.participant
+          }, "در حال نهایی‌سازی پروفایل ارزیابی...");
+          
+          pipelineStage = "telegram";
+        }
+
+        if (pipelineStage === "telegram") {
+          // Fix 9: Validation of final report object presence
+          if (!pipelinePayload.finalizeResponse.reportText || !pipelinePayload.finalizeResponse.reportData) {
+            throw new Error("داده‌های نهایی‌سازی گزارش از سرور ناقص دریافت شد.");
+          }
+          await apiCall({
+            action: "telegram",
+            reportText: pipelinePayload.finalizeResponse.reportText,
+            reportData: pipelinePayload.finalizeResponse.reportData
+          }, "در حال ثبت نتیجه در سیستم مرکزی...");
+          
+          pipelineStage = "done";
+        }
+
+        // Final Success State
+        localStorage.removeItem("qprime_draft"); // Cleanup cache
 
         document.getElementById("submitZone").classList.add("done");
         document.getElementById("doneScreen").classList.add("show");
         document.getElementById("doneScreen").scrollIntoView({ behavior: "smooth", block: "start" });
+
       } catch (error) {
         console.error(error);
         submissionStarted = false;
         submitBtn.disabled = false;
-        submitBtn.textContent = "ثبت و پردازش پاسخ‌ها";
+        submitBtn.textContent = "ثبت و پردازش پاسخ‌ها (تلاش مجدد)";
         setStatus(`خطا در پردازش: ${escapeHtml(error.message || "خطای نامشخص")}`, "err");
       }
     });
   </script>
 </body>
 </html>
+
+
