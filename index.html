@@ -1016,20 +1016,9 @@
           pipelinePayload.timings = collectTimings();
           pipelinePayload.participant = { name, age, contact };
 
-          // Fix 8: Strip long descriptive answers out of the answers object
-          const closedAnswers = {};
-          for (const key in answers) {
-            let isOpen = false;
-            for (const it of ITEMS) {
-              if (it.type === "open" && String(it.id) === key) isOpen = true;
-              if (it.extra && String(it.extra.id) === key) isOpen = true;
-            }
-            if (!isOpen) closedAnswers[key] = answers[key];
-          }
-
           pipelinePayload.scoreResponse = await apiCall({
             action: "score",
-            answers: closedAnswers,
+            answers: answers,
             timings: pipelinePayload.timings,
             openQA: pipelinePayload.openQA,
             participant: pipelinePayload.participant,
@@ -1077,8 +1066,7 @@
           pipelineStage = "done";
         }
 
-        // Final Success State
-        localStorage.removeItem("qprime_draft"); // Cleanup cache
+        localStorage.removeItem("qprime_draft");
 
         document.getElementById("submitZone").classList.add("done");
         document.getElementById("doneScreen").classList.add("show");
@@ -1095,5 +1083,3 @@
   </script>
 </body>
 </html>
-
-
