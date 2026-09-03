@@ -381,6 +381,15 @@
             <li>در سؤالات دارای سطح اطمینان، احتمال واقعی خود را صادقانه برآورد کنید؛ اطمینان بالا/پایین امتیاز مثبت نیست.</li>
           </ul>
         </div>
+        
+        <div class="consent-box">
+          <div class="consent-title">اعلام رضایت</div>
+          <div>این ارزیابی جهت سنجش‌های شناختی طراحی شده است و نتایج آن محرمانه می‌ماند.</div>
+          <label class="consent-check">
+            <input type="checkbox" id="pConsent">
+            <span>با شرایط شرکت در این ارزیابی موافقم *</span>
+          </label>
+        </div>
 
         <div class="field-row" style="margin-top:24px;">
           <div class="field">
@@ -448,9 +457,10 @@
     }
 
     function wordLimitOf(id) {
+      const strId = String(id);
       for (const item of ITEMS) {
-        if (item.id === id && item.wordLimit) return item.wordLimit;
-        if (item.extra && item.extra.id === id && item.extra.wordLimit) return item.extra.wordLimit;
+        if (String(item.id) === strId && item.wordLimit) return item.wordLimit;
+        if (item.extra && String(item.extra.id) === strId && item.extra.wordLimit) return item.extra.wordLimit;
       }
       return null;
     }
@@ -790,6 +800,7 @@
       const missing = [];
       const name = document.getElementById("pName").value.trim();
       const age = document.getElementById("pAge").value.trim();
+      const consentCheck = document.getElementById("pConsent");
 
       if (!name) missing.push("نام و نام‌خانوادگی");
       if (!age) {
@@ -800,23 +811,27 @@
           missing.push("سن معتبر (۱۶ تا ۱۰۰ سال)");
         }
       }
+      if (consentCheck && !consentCheck.checked) {
+        missing.push("اعلام رضایت");
+      }
 
       for (const id of requiredIds()) {
+        const strId = String(id);
         if (normalizeAnswerValue(answers[id]) === "") {
-          if (id.endsWith("_conf")) {
-            const baseId = id.slice(0, -5);
-            const item = ITEMS.find(it => it.id === baseId);
+          if (strId.endsWith("_conf")) {
+            const baseId = strId.slice(0, -5);
+            const item = ITEMS.find(it => String(it.id) === baseId);
             missing.push(`سطح اطمینان سؤال ${item ? item.number : baseId}`);
           } else {
-            const mainItem = ITEMS.find(it => it.id === id);
+            const mainItem = ITEMS.find(it => String(it.id) === strId);
             if (mainItem) {
               missing.push(`سؤال ${mainItem.number}`);
             } else {
-              const parentItem = ITEMS.find(it => it.extra && it.extra.id === id);
+              const parentItem = ITEMS.find(it => it.extra && String(it.extra.id) === strId);
               if (parentItem) {
                 missing.push(`توضیحات سؤال ${parentItem.number}`);
               } else {
-                missing.push(id);
+                missing.push(strId);
               }
             }
           }
