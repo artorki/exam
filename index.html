@@ -661,7 +661,14 @@
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        const responseText = await response.text();
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (e) {
+          throw new Error("پاسخ اولیه سرور فرمت معتبری ندارد.");
+        }
+
         if (data.error) throw new Error(data.error.message || "خطای سرور");
         if (!data.token) throw new Error("نشست معتبر از سرور دریافت نشد.");
         
@@ -704,14 +711,27 @@
         sessionToken
       };
 
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(body)
-      });
+      let response;
+      try {
+        response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(body)
+        });
+      } catch (err) {
+        throw new Error("خطا در برقراری ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.");
+      }
 
       if (!response.ok) throw new Error(`خطای ارتباطی HTTP ${response.status}`);
-      const data = await response.json();
+      
+      let data;
+      try {
+        const text = await response.text();
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error("پاسخ دریافتی از سرور معتبر نیست.");
+      }
+
       if (data.error) throw new Error(data.error.message || "خطای سرور");
       return data;
     }
@@ -722,15 +742,15 @@
         if (item.type !== "open") continue;
         list.push({
           id: item.id,
-          a: answers[item.id] || "",
+          a: (answers[item.id] || "").trim(),
           minW: item.idealMinWords || 5
         });
       }
 
       for (const item of ITEMS) {
         if (!item.extra) continue;
-        const value = answers[item.extra.id] || "";
-        if (item.extra.required || value.trim() !== "") {
+        const value = (answers[item.extra.id] || "").trim();
+        if (item.extra.required || value !== "") {
           list.push({
             id: item.extra.id,
             parentId: item.id,
@@ -748,7 +768,7 @@
 
       for (const item of ITEMS) {
         if (item.type === "info") continue;
-        const shown = itemShownAt[item.id];
+        const shown = itemShownAt[item.id] || sectionFirstSeen[item.id];
         const answered = itemFirstAnswered[item.id];
         if (shown && answered) {
           responseLatencySec[item.id] = Math.max(0, Math.round((answered - shown) / 1000));
@@ -777,20 +797,28 @@
       } else {
         const parsedAge = parseInt(age, 10);
         if (!Number.isFinite(parsedAge) || parsedAge < 16 || parsedAge > 100) {
-          missing.push("سن معتبر (16 تا 30 سال)");
+          missing.push("سن معتبر (۱۶ تا ۱۰۰ سال)");
         }
       }
 
       for (const id of requiredIds()) {
         if (normalizeAnswerValue(answers[id]) === "") {
-          const baseId = id.endsWith("_conf") ? id.slice(0, -5) : id;
-          const item = ITEMS.find(it => it.id === baseId);
           if (id.endsWith("_conf")) {
+            const baseId = id.slice(0, -5);
+            const item = ITEMS.find(it => it.id === baseId);
             missing.push(`سطح اطمینان سؤال ${item ? item.number : baseId}`);
-          } else if (item) {
-            missing.push(`سؤال ${item.number}`);
           } else {
-            missing.push(id);
+            const mainItem = ITEMS.find(it => it.id === id);
+            if (mainItem) {
+              missing.push(`سؤال ${mainItem.number}`);
+            } else {
+              const parentItem = ITEMS.find(it => it.extra && it.extra.id === id);
+              if (parentItem) {
+                missing.push(`توضیحات سؤال ${parentItem.number}`);
+              } else {
+                missing.push(id);
+              }
+            }
           }
         }
       }
@@ -824,6 +852,12 @@
       const age = validation.age;
       const contact = document.getElementById("pContact").value.trim();
 
+      // محاسبه دقیق آخرین زمان عدم تمرکز
+      let finalBlurTime = totalBlurTimeSec;
+      if (lastBlurTime > 0) {
+        finalBlurTime += Math.max(0, Math.round((Date.now() - lastBlurTime) / 1000));
+      }
+
       try {
         const openQA = collectOpenQA();
         const timings = collectTimings();
@@ -837,7 +871,7 @@
           participant,
           tabTracking: {
             blurCount: tabBlurCount,
-            totalBlurTime: totalBlurTimeSec
+            totalBlurTime: finalBlurTime
           }
         }, "در حال ثبت واقعیت‌های عملکردی آزمون...");
 
@@ -867,6 +901,7 @@
         console.error(error);
         submissionStarted = false;
         submitBtn.disabled = false;
+        submitBtn.textContent = "ثبت و پردازش پاسخ‌ها";
         setStatus(`خطا در پردازش: ${escapeHtml(error.message || "خطای نامشخص")}`, "err");
       }
     });
