@@ -533,6 +533,7 @@
           const j = Math.floor(Math.random() * (i + 1));
           [randomized[i], randomized[j]] = [randomized[j], randomized[i]];
         }
+
         inner += `<div class="options" data-id="${item.id}">`;
         for (const opt of randomized) {
           inner += `
@@ -794,6 +795,12 @@
         }
       }
 
+      return {
+        valid: missing.length === 0,
+        missing,
+        name,
+        age
+      };
     }
 
     document.getElementById("submitBtn").addEventListener("click", async () => {
@@ -866,4 +873,3 @@
   </script>
 </body>
 </html>
-
